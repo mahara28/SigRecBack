@@ -1,0 +1,51 @@
+
+server:
+  port: 8060
+
+spring:
+  application:
+    name: sigrecette-back
+
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://192.168.120.103:5432/sigrecette_db
+    username: postgres
+    password: admin
+    hikari:
+      maximumPoolSize: 5
+      connectionTimeout: 3000
+  jpa:
+    properties:
+      temp:
+        use_jdbc_metadata_defaults: false
+    hibernate:
+      ddl-auto: none
+
+springdoc:
+  version: v0
+  swagger-ui:
+    operationsSorter: method
+    default-models-expand-depth: 0
+  packages-to-scan: com.mc
+  model-and-view-allowed: true
+  cache:
+    disabled: true
+
+## Assets config
+assets:
+  pdf-header: classpath:config/exportAssets/portrait.png
+  pdf-header2: classpath:config/exportAssets/portraitEn.png
+
+jwt:
+  secret: ByE3D3710dfb6ecf9aa15084b0b8b341f13312979a34cb5e6e3fe6ae5a7594539b449dbc23c7ec2766b6386f422be2012b046ae2955bda05cdc4c637e6c2b47c04
+  expiration: 86400
+
+security:
+  public-paths:
+    - /public/**
+    - /swagger-ui/**
+    - /v3/api-docs/**
+    - /swagger-ui.html
+    - /webjars/**
+    - /ws/**

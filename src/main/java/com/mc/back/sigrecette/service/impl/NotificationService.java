@@ -1,0 +1,204 @@
+package com.mc.back.sigrecette.service.impl;
+
+
+import com.mc.back.sigrecette.model.Notification;
+import com.mc.back.sigrecette.repository.INotificationRepository;
+import com.mc.back.sigrecette.service.ICommonService;
+import com.mc.back.sigrecette.service.INotificationService;
+
+import com.mc.back.sigrecette.tools.ConstanteService;
+import com.mc.back.sigrecette.tools.ConstanteWs;
+import com.mc.back.sigrecette.tools.UtilsWs;
+import com.mc.back.sigrecette.tools.model.SendObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.List;
+
+@Service
+public class NotificationService implements INotificationService {
+
+    private static final Logger logger = LogManager.getLogger(NotificationService.class);
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    private INotificationRepository notificationRepository;
+
+
+
+    @Autowired
+    private ICommonService commonService;
+
+    @Autowired
+    private UtilsWs utilsWs;
+
+    @Override
+    public List<Notification> getList() {
+        try {
+            return notificationRepository.findAll();
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method getList :: {}", e.toString());
+            return null;
+        }
+    }
+
+    @Override
+    public Notification findById(Long id) {
+        try {
+            SendObject sendObject = commonService.getObjectById(new Notification(), id.toString(), false);
+            if (sendObject.getCode().equals(ConstanteService._CODE_SERVICE_SUCCESS))
+                return (Notification) sendObject.getPayload();
+            return null;
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method findById :: {}", e.toString());
+            return null;
+        }
+    }
+
+    @Override
+    public Notification saveOrUpdate(Notification entity) {
+        try {
+            if (entity.getId() == null) {
+                entity.setDateCreate((Instant) commonService.getDateSystemNow().getPayload());
+            }
+            return notificationRepository.save(entity);
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method saveOrUpdate :: {}", e.toString());
+            return null;
+        }
+    }
+
+    @Override
+    public Boolean deleteById(Long id) {
+        try {
+            if (id == null)
+                return false;
+            notificationRepository.delete(this.findById(id));
+            return true;
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method deleteById :: " + e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public SendObject findNotificationByIdWs(Long id) {
+        try {
+            if (id == null)
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+            Notification entity = this.findById(id);
+            if (entity == null)
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_NOT_EXISTS_ROW_DATA_BASE, new JSONObject());
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(entity));
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method findNotificationByIdWs :: {}", e.toString());
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+        }
+    }
+
+    @Override
+    public SendObject getListNotificationWs() {
+        try {
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONArray(this.getList()));
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method getListNotificationWs() :: {}", e.toString());
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+        }
+    }
+
+    @Override
+    public SendObject saveOrUpdateNotificationWs(Notification entity) {
+        try {
+            if (entity == null) {
+                Notification notification = new Notification();
+                notification.setIdUser(1L);
+                notification.setDateCreate((Instant) commonService.getDateSystemNow().getPayload());
+                entity = notification;
+            }
+
+            entity = this.saveOrUpdate(entity);
+            if (entity == null)
+                return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(entity));
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method saveOrUpdateNotificationWs :: {}", e.toString());
+            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR, new JSONObject());
+        }
+    }
+
+    @Override
+    public SendObject deleteNotificationByIdWs(Long id) {
+        try {
+            Boolean resultDelete = this.deleteById(id);
+            if (resultDelete == false)
+                return new SendObject(ConstanteService._CODE_SERVICE_ERROR_DELETE_ROW, new JSONObject());
+            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_SUCCESS, new JSONObject());
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method getListNotification {}", e.toString());
+            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR, new JSONObject());
+        }
+    }
+
+    @Override
+    public SendObject setAsReadWs(Long id) {
+        try {
+            Notification entity = this.findById(id);
+            if (entity == null)
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_NOT_EXISTS_ROW_DATA_BASE, new JSONObject());
+            entity.setDateVisual((Instant) commonService.getDateSystemNow().getPayload());
+            this.saveOrUpdate(entity);
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(entity));
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method setAsReadWs :: {}", e.toString());
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+        }
+    }
+
+    @Override
+    public SendObject sendNotificationWs(Notification entity) {
+        try {
+            simpMessagingTemplate.convertAndSend(
+                    "/topic/receive",
+                    String.format(entity.getNotifFr())
+            );
+            entity = this.saveOrUpdate(entity);
+            if (entity == null)
+                return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(entity));
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method sendNotificationWs :: {}", e.toString());
+            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR, new JSONObject());
+        }
+    }
+
+    @Override
+    public SendObject pushNotificationReady(String qid) {
+        try {
+            if (qid == null)
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+
+            Notification notification = new Notification();
+            notification.setDateCreate(Instant.now());
+            notification.setNotifFr("Résultat disponible pour " + qid);
+            notification.setNotifEn("Result ready for " + qid);
+            notification.setIdUser(1L);
+            this.sendNotificationWs(notification);
+
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(notification));
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method pushNotificationReady :: {}", e.toString());
+            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR, new JSONObject());
+        }
+    }
+
+
+
+}
