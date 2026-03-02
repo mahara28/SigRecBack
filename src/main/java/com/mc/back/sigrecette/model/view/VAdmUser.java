@@ -72,5 +72,6 @@ public class VAdmUser {
 
     @Column(name = "code_profil", length = Integer.MAX_VALUE)
     private String codeProfil;
+ 
 
 }

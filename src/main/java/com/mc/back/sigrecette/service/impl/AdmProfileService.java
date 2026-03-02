@@ -3,6 +3,7 @@ package com.mc.back.sigrecette.service.impl;
 
 import com.mc.back.sigrecette.model.AdmFoncProfile;
 import com.mc.back.sigrecette.model.AdmProfile;
+import com.mc.back.sigrecette.model.tool.AdmFoncProfileDto;
 import com.mc.back.sigrecette.repository.IAdmFoncProfileRepository;
 import com.mc.back.sigrecette.repository.IAdmProfileRepository;
 import com.mc.back.sigrecette.service.IAdmProfileService;
@@ -97,14 +98,22 @@ public class AdmProfileService implements IAdmProfileService {
             entity.setDateCreate(new Date());
             entity.setDateUpdate(new Date());
             AdmProfile savedEntity = admProfileRepository.save(entity);
-            List<Long> listAdmFoncIds = entity.getListAdmFoncIds();
+            List<AdmFoncProfileDto> listAdmFoncIds = entity.getListAdmFoncIds();
 
             List<AdmFoncProfile> admFoncProfils = new ArrayList<>();
 
-            for (Long menuId : listAdmFoncIds) {
+            for (AdmFoncProfileDto menuId : listAdmFoncIds) {
                 AdmFoncProfile admFoncProfil = new AdmFoncProfile();
                 admFoncProfil.setIdProfil(savedEntity.getId());
-                admFoncProfil.setIdFonc(menuId);
+                admFoncProfil.setIdFonc(menuId.getIdFonc());
+                admFoncProfil.setIsList(menuId.getIsList());
+                admFoncProfil.setIsUpdate(menuId.getIsUpdate());
+                admFoncProfil.setIsSupp(menuId.getIsSupp());
+                admFoncProfil.setIsDetails(menuId.getIsDetails());
+                admFoncProfil.setIsExport(menuId.getIsExport());
+                admFoncProfil.setIsImprime(menuId.getIsImprime());
+                admFoncProfil.setIsAdd(menuId.getIsAdd());
+                
                 admFoncProfils.add(admFoncProfil);
             }
 
@@ -131,14 +140,22 @@ public class AdmProfileService implements IAdmProfileService {
 
                 AdmProfile updatedEntity = admProfileRepository.save(existingEntity);
 
-                List<Long> listAdmFoncIds = entity.getListAdmFoncIds();
+                List<AdmFoncProfileDto> listAdmFoncIds = entity.getListAdmFoncIds();
                 List<AdmFoncProfile> admFoncProfiles = new ArrayList<>();
 
                 admFoncProfileRepository.deleteByIdAdmProfil(updatedEntity.getId());
-                for (Long menuId : listAdmFoncIds) {
+                for (AdmFoncProfileDto menuId : listAdmFoncIds) {
                     AdmFoncProfile admFoncProfile = new AdmFoncProfile();
                     admFoncProfile.setIdProfil(updatedEntity.getId());
-                    admFoncProfile.setIdFonc(menuId);
+                    admFoncProfile.setIdFonc(menuId.getIdFonc());
+                    admFoncProfile.setIsList(menuId.getIsList());
+                    admFoncProfile.setIsUpdate(menuId.getIsUpdate());
+                    admFoncProfile.setIsSupp(menuId.getIsSupp());
+                    admFoncProfile.setIsDetails(menuId.getIsDetails());
+                    admFoncProfile.setIsExport(menuId.getIsExport());
+                    admFoncProfile.setIsImprime(menuId.getIsImprime());
+                    admFoncProfile.setIsAdd(menuId.getIsAdd());
+                    
                     admFoncProfiles.add(admFoncProfile);
                 }
 

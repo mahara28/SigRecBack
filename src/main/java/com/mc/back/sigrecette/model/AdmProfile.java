@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
+import com.mc.back.sigrecette.model.tool.AdmFoncProfileDto;
+
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
@@ -47,8 +49,11 @@ public class AdmProfile {
     @Column(name = "date_update")
     private Date dateUpdate;
 
+    /*@Transient
+    private List<Long> listAdmFoncIds;*/
+    
     @Transient
-    private List<Long> listAdmFoncIds;
+    private List<AdmFoncProfileDto> listAdmFoncIds;
 
     public void setDateCreate(java.util.Date date) {
         this.dateCreate = (date != null) ? new Date(date.getTime()) : null;

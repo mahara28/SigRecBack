@@ -51,5 +51,26 @@ public class AdmFonc {
 
     @Transient
     private Boolean checked = false;
+    
+    @Transient
+    private Long isList;
+
+    @Transient
+    private Long isUpdate;
+
+    @Transient
+    private Long isSupp;
+
+    @Transient
+    private Long isDetails;
+
+    @Transient
+    private Long isExport;
+
+    @Transient
+    private Long isImprime;
+
+    @Transient
+    private Long isAdd;
 
 }

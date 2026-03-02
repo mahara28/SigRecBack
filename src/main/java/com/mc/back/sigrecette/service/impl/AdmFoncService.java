@@ -2,7 +2,9 @@ package com.mc.back.sigrecette.service.impl;
 
 
 import com.mc.back.sigrecette.model.AdmFonc;
+import com.mc.back.sigrecette.model.AdmFoncProfile;
 import com.mc.back.sigrecette.model.AdmProfile;
+import com.mc.back.sigrecette.repository.IAdmFoncProfileRepository;
 import com.mc.back.sigrecette.repository.IAdmFoncRepository;
 import com.mc.back.sigrecette.service.IAdmFoncService;
 import com.mc.back.sigrecette.service.ICommonService;
@@ -27,6 +29,9 @@ public class AdmFoncService implements IAdmFoncService {
 
     @Autowired
     private IAdmFoncRepository admFoncRepository;
+    
+    @Autowired
+    private IAdmFoncProfileRepository admFoncProfileRepository;
 
     @Autowired
     private UtilsWs utilsWs;
@@ -76,31 +81,111 @@ public class AdmFoncService implements IAdmFoncService {
         }
     }
 
+    //Override
+    //ublic SendObject getAllMenusChecked(Long idProfil) {
+    //   try {
+    //       List<AdmFonc> listMenu = admFoncRepository.getAllMenus();
+    //       List<AdmFonc> listMenubyprofil = admFoncRepository.getAllMenusCheck(idProfil);
+    //       List<AdmFoncProfile> listPermissionbyprofil = admFoncProfileRepository.getListAdmFoncProfileByIdProfil(idProfil);
+    //       System.out.println(listPermissionbyprofil);
+    //       Map<String, Object> resultMap = new HashMap<>();
+    //       if (idProfil != null) {
+    //
+    //           SendObject sendObject = commonService.getObjectById(new AdmProfile(), idProfil.toString(), false);
+    //           Object admProfile = sendObject.getPayload();
+    //           resultMap.put("admProfil", admProfile);
+    //       }
+    //
+    //       for (AdmFonc menuProfil : listMenubyprofil) {
+    //       	Map<Long, AdmFoncProfile> mapPermission =
+    //       	        listPermissionbyprofil.stream()
+    //       	                .collect(Collectors.toMap(
+    //       	                        AdmFoncProfile::getIdFonc,
+    //       	                        p -> p
+    //       	                ));
+    //           int index = listMenu.indexOf(menuProfil);
+    //           if (index != -1) {
+    //               listMenu.get(index).setChecked(true);
+    //           }
+    //       }
+    //       List<AdmFonc> listParent = listMenu.stream().filter(x -> x.getIdParent() == null)
+    //               .collect(Collectors.toList());
+    //       resultMap.put("menus", this.getListMenu(listMenu, listParent));
+    //       return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, resultMap);
+    //   } catch (Exception e) {
+    //       logger.error("Error AdmFoncService in method getAllMenusChecked :: {}", String.valueOf(e));
+    //       return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+    //   }
+    //
+    
     @Override
     public SendObject getAllMenusChecked(Long idProfil) {
         try {
+
             List<AdmFonc> listMenu = admFoncRepository.getAllMenus();
-            List<AdmFonc> listMenubyprofil = admFoncRepository.getAllMenusCheck(idProfil);
+
+            List<AdmFonc> listMenubyprofil =
+                    admFoncRepository.getAllMenusCheck(idProfil);
+
+            List<AdmFoncProfile> listPermissionbyprofil =
+                    admFoncProfileRepository.getListAdmFoncProfileByIdProfil(idProfil);
+
             Map<String, Object> resultMap = new HashMap<>();
+
             if (idProfil != null) {
 
-                SendObject sendObject = commonService.getObjectById(new AdmProfile(), idProfil.toString(), false);
-                Object admProfile = sendObject.getPayload();
-                resultMap.put("admProfil", admProfile);
+                SendObject sendObject =
+                        commonService.getObjectById(new AdmProfile(), idProfil.toString(), false);
+
+                resultMap.put("admProfil", sendObject.getPayload());
             }
 
+            /* checked menus */
             for (AdmFonc menuProfil : listMenubyprofil) {
-                int index = listMenu.indexOf(menuProfil);
-                if (index != -1) {
-                    listMenu.get(index).setChecked(true);
+
+                for (AdmFonc menu : listMenu) {
+
+                    if (menu.getId().equals(menuProfil.getId())) {
+                        menu.setChecked(true);
+                    }
                 }
             }
-            List<AdmFonc> listParent = listMenu.stream().filter(x -> x.getIdParent() == null)
-                    .collect(Collectors.toList());
+
+            /* permissions mapping */
+            Map<Long, AdmFoncProfile> mapPermission =
+                    listPermissionbyprofil.stream()
+                            .collect(Collectors.toMap(
+                                    AdmFoncProfile::getIdFonc,
+                                    p -> p
+                            ));
+
+            for (AdmFonc menu : listMenu) {
+
+                AdmFoncProfile perm = mapPermission.get(menu.getId());
+
+                if (perm != null) {
+
+                    menu.setIsList(perm.getIsList());
+                    menu.setIsAdd(perm.getIsAdd());
+                    menu.setIsUpdate(perm.getIsUpdate());
+                    menu.setIsSupp(perm.getIsSupp());
+                    menu.setIsDetails(perm.getIsDetails());
+                    menu.setIsExport(perm.getIsExport());
+                    menu.setIsImprime(perm.getIsImprime());
+                }
+            }
+
+            List<AdmFonc> listParent =
+                    listMenu.stream()
+                            .filter(x -> x.getIdParent() == null)
+                            .collect(Collectors.toList());
+
             resultMap.put("menus", this.getListMenu(listMenu, listParent));
+
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, resultMap);
+
         } catch (Exception e) {
-            logger.error("Error AdmFoncService in method getAllMenusChecked :: {}", String.valueOf(e));
+            logger.error("Error AdmFoncService in method getAllMenusChecked :: {}", e.toString());
             return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
         }
     }

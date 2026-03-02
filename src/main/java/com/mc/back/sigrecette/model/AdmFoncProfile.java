@@ -1,5 +1,7 @@
 package com.mc.back.sigrecette.model;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,5 +22,40 @@ public class AdmFoncProfile {
 
     @NotNull
     private Long idProfil;
+    
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "is_list", nullable = false)
+    private Long isList;
+    
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "is_add", nullable = false)
+    private Long isAdd;
+    
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "is_update", nullable = false)
+    private Long isUpdate;
+    
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "is_supp", nullable = false)
+    private Long isSupp;
+    
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "is_details", nullable = false)
+    private Long isDetails;
+    
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "is_export", nullable = false)
+    private Long isExport;
+    
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "is_imprime", nullable = false)
+    private Long isImprime;
 
 }
