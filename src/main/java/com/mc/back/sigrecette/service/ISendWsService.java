@@ -10,7 +10,7 @@ public interface ISendWsService {
 
     ResponseEntity<?> sendResultPublic(SendObject so);
 
-    String ipAddressFormWeb(HttpServletRequest request);
+    String ipAddressFormWeb(HttpServletRequest exchange);
 
     Long getIdCurrentUser(HttpServletRequest request);
 

@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.List;
@@ -51,14 +52,27 @@ public class PublicController {
     public ResponseEntity<?> authenticateUser(HttpServletRequest exchange, @RequestBody AuthRequest authenticationRequest) {
         try {
             return sendWsService.sendResultPublic(
-                    admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange))
+                    admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange),exchange)
             );
         } catch (Exception argEx) {
             logger.error("Error PublicController in method authenticate :: {}", String.valueOf(argEx));
             return sendWsService.sendResultException(exchange);
         }
     }
-
+    
+    /*@GetMapping(value = "whoAmI", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> whoAmI(ServerWebExchange exchange) {
+        try {
+            return sendWsService.sendResult(
+                    exchange,
+                    admUserService.whoAmI(admUserService.getUserIdFromToken(exchange))
+            );
+        } catch (Exception e) {
+            logger.error("Error PublicController in method whoAmI :: {}", String.valueOf(e));
+            return sendWsService.sendResultException(exchange);
+        }
+    }*/
+    
     @GetMapping(value = "whoAmI", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> whoAmI(HttpServletRequest request) {
         try {
