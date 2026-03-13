@@ -42,4 +42,8 @@ public interface IAdmUserService {
     SendObject getCurrentUserByTokenWs(String token);
 
     AdmUser findUserById(Long id);
+    
+    SendObject logout(String token);
+    
+    SendObject refreshAccessToken(String token);
 }

@@ -43,4 +43,5 @@ public class ConstanteWs {
 	public static final String _CODE_WS_ERROR_CONVERT = "499";
 	public static final String _CODE_WS_ERROR = "500";
 
+	public static String _CODE_WS_INVALID_REFRESH ="410";
 }
