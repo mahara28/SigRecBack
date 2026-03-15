@@ -43,7 +43,7 @@ public class PublicController {
     public ResponseEntity<?> authenticateUser(HttpServletRequest exchange, @RequestBody AuthRequest authenticationRequest) {
         try {
             return sendWsService.sendResultPublic(
-                    admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange),exchange)
+                    admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange))
             );
         } catch (Exception argEx) {
             logger.error("Error PublicController in method authenticate :: {}", String.valueOf(argEx));
