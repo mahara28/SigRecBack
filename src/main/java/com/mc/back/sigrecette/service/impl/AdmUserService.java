@@ -1,7 +1,6 @@
 package com.mc.back.sigrecette.service.impl;
 
 import com.mc.back.sigrecette.model.ActiveSession;
-import com.mc.back.sigrecette.model.AdmFonc;
 import com.mc.back.sigrecette.model.AdmFoncProfile;
 import com.mc.back.sigrecette.model.AdmUser;
 import com.mc.back.sigrecette.model.AdmUserProfil;
@@ -31,6 +30,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ServerWebExchange;
@@ -248,19 +249,18 @@ public class AdmUserService implements IAdmUserService {
             return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
         }
     }
-
+    
     @Override
-    public SendObject authenticateUserWs(AuthRequest authRequest, String ipAddress, HttpServletRequest exchange) {
-
-        String accessToken = null;
+    public SendObject authenticateUserWs(AuthRequest authRequest, String ipAddress) {
+        String token = null;
         String refreshToken = null;
         AdmUser user = null;
-        
         try {
             // Get user by email
             user = admUserRepository.findByEmail(authRequest.getEmail());
             if (user == null)
                 return utilsWs.resultWs(ConstanteWs._CODE_WS_USER_ERROR_AUTH, new JSONObject());
+
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             if (!encoder.matches(authRequest.getPassword(), user.getPwd())) {
                 logAccessService.saveLogAccess(ConstanteWs._CODE_WS_USER_ERROR_AUTH, user.getId(), user.getEmail(), ipAddress);
@@ -272,85 +272,13 @@ public class AdmUserService implements IAdmUserService {
                 logAccessService.saveLogAccess(ConstanteWs._CODE_WS_SUCCESS_WAIT_PERMISSION, user.getId(), user.getEmail(), ipAddress);
                 return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS_WAIT_PERMISSION, new JSONObject());
             }
-            
-            Optional<ActiveSession> existingOpt = activeSessionRepository.findById(user.getId());
 
-            if (existingOpt.isPresent()) {
-                ActiveSession existing = existingOpt.get();
-                String clientRefresh = authRequest.getRefreshToken(); // may be null
-
-                if (clientRefresh != null && clientRefresh.equals(existing.getRefreshToken())) {
-                    // Same device/browser (localStorage present) => allow: just re-issue new access
-                    String newAccess = jwtSecurity.generate(user, "ACCESS");
-                    existing.setToken(newAccess);
-                    existing.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-                    activeSessionRepository.save(existing);
-
-                    JSONObject json = new JSONObject();
-                    json.put("accessToken", newAccess);
-                    json.put("refreshToken", existing.getRefreshToken()); // unchanged
-                    return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, json);
-                } else {
-                    // Different device: block (session already active elsewhere)
-                    return utilsWs.resultWs("444", new JSONObject()); // your existing code uses 444
-                }
-            }
-
-            
-            // : Check existing active session
-//            if (activeSessionRepository.findById(user.getId()).isPresent()) {
-//                return utilsWs.resultWs(ConstanteWs._CODE_WS_USER_ALREADY_CONNECTED, new JSONObject());
-//            }
-            
-          
-
-        
-            
-            
-            //////session//////
-            
-//            Timestamp now = new Timestamp(System.currentTimeMillis());
-//   
-//            Optional<ActiveSession> existingOpt = activeSessionRepository.findById(user.getId());
-//            ActiveSession session;
-//            if (existingOpt.isPresent()) {
-//               
-//                session = existingOpt.get();
-//                session.setToken(token);
-//                session.setCreatedAt(now);
-//               
-//            } else {
-//       
-//                session = new ActiveSession(user.getId(), token, now);
-//            }
-//            activeSessionRepository.save(session);
-            
-            // generate tokens
-             accessToken = jwtSecurity.generate(user, "ACCESS");
-             refreshToken = jwtSecurity.generate(user, "REFRESH");
-
-            // single-session policy: delete old session if exists (so new login invalidates old refresh)
-//            Optional<ActiveSession> existingOpt = activeSessionRepository.findById(user.getId());
-//            if (existingOpt.isPresent()) {
-//                activeSessionRepository.delete(existingOpt.get());
-//            }
-
-            // Save new session
-            Timestamp now = new Timestamp(System.currentTimeMillis());
-            Timestamp refreshExpiry = new Timestamp(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000); // 7 days (example)
-            ActiveSession session = new ActiveSession(user.getId(), accessToken, now, refreshToken, refreshExpiry);
-            session.setRefreshToken(refreshToken);
-            session.setRefreshExpiresAt(refreshExpiry);
-            activeSessionRepository.save(session);
-
-            
-            
-            
-            //////////
-
+            // Generate token
+            token = jwtSecurity.generate(user, "ACCESS");
+            refreshToken = jwtSecurity.generate(user, "REFRESH");
 
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("token", accessToken);
+            jsonObject.put("token", token);
             jsonObject.put("refreshToken", refreshToken); 
             logAccessService.saveLogAccess(ConstanteWs._CODE_WS_SUCCESS, user.getId(), user.getEmail(), ipAddress);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, jsonObject);
@@ -360,11 +288,13 @@ public class AdmUserService implements IAdmUserService {
             return utilsWs.resultWs(ConstanteWs._CODE_WS_USER_ERROR_AUTH, new JSONObject());
         } finally {
             // Log the access error if the token is not generated
-            if (accessToken == null)
+            if (token == null)
                 logAccessService.saveLogAccess(ConstanteWs._CODE_WS_USER_ERROR_AUTH,
                         user != null ? user.getId() : null, authRequest.getEmail(), ipAddress);
         }
     }
+
+    
 
     @Override
     public SendObject authenticateUserNo2FA(AuthRequest authRequest, String ipAddress) {
@@ -505,6 +435,86 @@ public class AdmUserService implements IAdmUserService {
     @Override
     public AdmUser findUserById(Long id) {
         return admUserRepository.findUserById(id);
+    }
+    
+    
+    @Override
+    public SendObject logout(String token) {
+        try {
+            // try delete by access token
+            ActiveSession byToken = activeSessionRepository.findByToken(token);
+            if (byToken != null) {
+                activeSessionRepository.delete(byToken);
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject());
+            }
+            // or try delete by refresh token
+            ActiveSession byRefresh = activeSessionRepository.findByRefreshToken(token);
+            if (byRefresh != null) {
+                activeSessionRepository.delete(byRefresh);
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject());
+            }
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject());
+        } catch (Exception e) {
+            logger.error("Error VAdmUserService in method logout :: {}", String.valueOf(e));
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+        }
+    }
+    
+    @Override
+    public SendObject refreshAccessToken(String refreshToken) {
+        try {
+            if (refreshToken == null) 
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_INVALID_REFRESH, new JSONObject());
+
+            ActiveSession session = activeSessionRepository.findByRefreshToken(refreshToken);
+            /*if (session == null) {
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_INVALID_REFRESH, new JSONObject());
+            }*/
+
+            // check refresh expiry
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            /*if (session.getRefreshExpiresAt() == null || session.getRefreshExpiresAt().before(now)) {
+                activeSessionRepository.delete(session);
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_INVALID_REFRESH, new JSONObject());
+            }*/
+
+            // get user
+            AdmUser user = admUserRepository.findById(session.getUserId()).orElse(null);
+            if (user == null) {
+                activeSessionRepository.delete(session);
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_INVALID_REFRESH, new JSONObject());
+            }
+
+            // generate new access only (keep refresh the same)
+            String newAccess = jwtSecurity.generate(user, "ACCESS");
+
+            session.setToken(newAccess);
+            session.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+            activeSessionRepository.save(session);
+
+            JSONObject payload = new JSONObject();
+            payload.put("accessToken", newAccess);
+            payload.put("refreshToken", session.getRefreshToken()); // keep old refresh
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, payload);
+
+        } catch (Exception e) {
+            logger.error("Error refreshAccessToken :: {}", e.getMessage());
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+        }
+    }
+    
+    @EnableScheduling
+    public class ActiveSessionCleanupService {
+
+        @Autowired
+        private ActiveSessionRepository activeSessionRepository;
+
+        // Runs every day at midnight (00:00)
+        @Scheduled(cron = "0 0 0 * * *")
+        public void deleteAllSessionsAtMidnight() {
+            activeSessionRepository.deleteAll();
+            System.out.println("All active sessions deleted at midnight.");
+        }
     }
 
 }

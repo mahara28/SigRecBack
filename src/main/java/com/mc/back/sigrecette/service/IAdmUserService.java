@@ -25,7 +25,7 @@ public interface IAdmUserService {
 
     SendObject deleteAdmUserByIdWs(Long id);
 
-    SendObject authenticateUserWs(AuthRequest authRequest, String ipAddress,HttpServletRequest exchange);
+    SendObject authenticateUserWs(AuthRequest authRequest, String ipAddress);
 
     SendObject authenticateUserNo2FA(AuthRequest authRequest, String ipAddress);
 
@@ -42,4 +42,8 @@ public interface IAdmUserService {
     SendObject getCurrentUserByTokenWs(String token);
 
     AdmUser findUserById(Long id);
+    
+    SendObject logout(String token);
+    
+    SendObject refreshAccessToken(String token);
 }

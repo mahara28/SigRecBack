@@ -117,7 +117,7 @@ public class AdmProfileController {
     }
 
     @GetMapping(value = "/menu", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getMenusWs(HttpServletRequest request, @RequestParam("idProfil") List<Long> idProfil) {
+    public ResponseEntity<?> getMenusWs(HttpServletRequest request, @RequestParam(value = "idProfil", required = false) List<Long> idProfil) {
         try {
             if (idProfil == null || idProfil.isEmpty()) {
 

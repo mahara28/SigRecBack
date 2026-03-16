@@ -10,10 +10,17 @@ spring:
   # Database Configuration
   datasource:
     url: jdbc:postgresql://192.168.120.103:5432/sigrecette_db
+<<<<<<< HEAD
  #   url: jdbc:postgresql://localhost:5432/sigrecette_db
     username: postgres
     password: admin
     #password: 1234
+=======
+#    url: jdbc:postgresql://localhost:5432/sigrecette_db
+    username: postgres
+    password: admin
+#   password: 1234
+>>>>>>> 5bae66095227d838be14ce9b9cc3d34ad944535b
     hikari:
       maximumPoolSize: 5
       connectionTimeout: 3000

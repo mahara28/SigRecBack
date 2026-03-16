@@ -5,24 +5,15 @@ import com.mc.back.sigrecette.security.JwtSecurityUtil;
 import com.mc.back.sigrecette.service.IAdmUserService;
 import com.mc.back.sigrecette.service.ICommonService;
 import com.mc.back.sigrecette.service.ISendWsService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.servlet.view.RedirectView;
-
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -52,7 +43,7 @@ public class PublicController {
     public ResponseEntity<?> authenticateUser(HttpServletRequest exchange, @RequestBody AuthRequest authenticationRequest) {
         try {
             return sendWsService.sendResultPublic(
-                    admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange),exchange)
+                    admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange))
             );
         } catch (Exception argEx) {
             logger.error("Error PublicController in method authenticate :: {}", String.valueOf(argEx));
@@ -97,6 +88,34 @@ public class PublicController {
     }
 
 
+    @GetMapping(value = "logout", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> logout(ServerWebExchange request, @RequestParam("id") Long id) {
+    	
+        String authHeader = request.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        String token = authHeader.substring(7).trim();
+       
+        try {
+        	
+            return sendWsService.sendResult(
+            		request,
+                    admUserService.logout(token)
+            );
+        } catch (Exception e) {
+            logger.error("Error PublicController in method logout :: {}", String.valueOf(e));
+            return sendWsService.sendResultException(request);
+        }
+    }
+    
+    @PostMapping(value = "/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> refresh(ServerWebExchange exchange, @RequestBody Map<String,String> payload) {
+        try {
+            String refreshToken = payload.get("refreshToken");
+            return sendWsService.sendResultPublic(admUserService.refreshAccessToken(refreshToken));
+        } catch (Exception e) {
+            logger.error("Error PublicController in method refresh :: {}", String.valueOf(e));
+            return sendWsService.sendResultException(exchange);
+        }
+    }
 
 
 }
