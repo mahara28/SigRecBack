@@ -45,6 +45,10 @@ public class AdmFonc {
     @Size(max = 300)
     @Column(name = "des_en", length = 300)
     private String desEn;
+    
+    @Size(max = 300)
+    @Column(name = "code_translate", length = 300)
+    private String codeTranslate;
 
     @Transient
     private List<AdmFonc> listSousMenu;
