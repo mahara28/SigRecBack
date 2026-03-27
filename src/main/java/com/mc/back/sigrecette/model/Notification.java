@@ -19,23 +19,22 @@ public class Notification {
     @Column(name = "id", nullable = false, precision = 22)
     private Long id;
 
-    @Column(name = "id_nm_type_notif", precision = 22)
-    private Long idNmTypeNotif;
+    @Column(name = "id_type_notif", precision = 22)
+    private Long idTypeNotif;
 
-    @Column(name = "notif_en", length = Integer.MAX_VALUE)
-    private String notifEn;
+    @Column(name = "sujet", length = Integer.MAX_VALUE)
+    private String sujet;
 
-    @Column(name = "notif_fr", length = Integer.MAX_VALUE)
-    private String notifFr;
+    @Column(name = "titre", length = Integer.MAX_VALUE)
+    private String titre;
 
-    @Column(name = "date_create")
-    private Instant dateCreate;
+    @Column(name = "date_envoi")
+    private Instant dateEnvoi;
 
-    @Column(name = "date_visual")
-    private Instant dateVisual;
-
-    @Column(name = "id_user", precision = 22)
-    private Long idUser;
+    @Column(name = "id_user_em", precision = 22)
+    private Long idUserEm;
+    @Column(name = "priority")
+    private Integer priority;
 
 
 }

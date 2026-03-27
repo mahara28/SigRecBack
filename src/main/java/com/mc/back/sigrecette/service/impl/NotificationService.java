@@ -67,7 +67,7 @@ public class NotificationService implements INotificationService {
     public Notification saveOrUpdate(Notification entity) {
         try {
             if (entity.getId() == null) {
-                entity.setDateCreate((Instant) commonService.getDateSystemNow().getPayload());
+                entity.setDateEnvoi((Instant) commonService.getDateSystemNow().getPayload());
             }
             return notificationRepository.save(entity);
         } catch (Exception e) {
@@ -119,8 +119,8 @@ public class NotificationService implements INotificationService {
         try {
             if (entity == null) {
                 Notification notification = new Notification();
-                notification.setIdUser(1L);
-                notification.setDateCreate((Instant) commonService.getDateSystemNow().getPayload());
+                //notification.setIdUser(1L);
+                notification.setDateEnvoi((Instant) commonService.getDateSystemNow().getPayload());
                 entity = notification;
             }
 
@@ -153,7 +153,7 @@ public class NotificationService implements INotificationService {
             Notification entity = this.findById(id);
             if (entity == null)
                 return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_NOT_EXISTS_ROW_DATA_BASE, new JSONObject());
-            entity.setDateVisual((Instant) commonService.getDateSystemNow().getPayload());
+            //entity.setDateRec((Instant) commonService.getDateSystemNow().getPayload());
             this.saveOrUpdate(entity);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(entity));
         } catch (Exception e) {
@@ -167,7 +167,7 @@ public class NotificationService implements INotificationService {
         try {
             simpMessagingTemplate.convertAndSend(
                     "/topic/receive",
-                    String.format(entity.getNotifFr())
+                    String.format(entity.getSujet())
             );
             entity = this.saveOrUpdate(entity);
             if (entity == null)
@@ -186,10 +186,10 @@ public class NotificationService implements INotificationService {
                 return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
 
             Notification notification = new Notification();
-            notification.setDateCreate(Instant.now());
-            notification.setNotifFr("Résultat disponible pour " + qid);
-            notification.setNotifEn("Result ready for " + qid);
-            notification.setIdUser(1L);
+            notification.setDateEnvoi(Instant.now());
+            notification.setSujet("Résultat disponible pour " + qid);
+            //notification.setNotifEn("Result ready for " + qid);
+            //notification.setIdUser(1L);
             this.sendNotificationWs(notification);
 
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(notification));
