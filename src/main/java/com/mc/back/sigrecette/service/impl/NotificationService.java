@@ -209,14 +209,14 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public SendObject pushNotificationReady(String qid) {
+    public SendObject pushNotificationReady(String message) {
         try {
-            if (qid == null)
+            if (message == null)
                 return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
 
             Notification notification = new Notification();
             notification.setDateEnvoi(Instant.now());
-            notification.setSujet("Résultat disponible pour " + qid);
+            notification.setSujet(message);
             //notification.setNotifEn("Result ready for " + qid);
             //notification.setIdUser(1L);
             this.sendNotificationWs(notification);

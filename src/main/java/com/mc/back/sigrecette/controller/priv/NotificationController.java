@@ -3,6 +3,7 @@ package com.mc.back.sigrecette.controller.priv;
 import com.mc.back.sigrecette.model.Notification;
 import com.mc.back.sigrecette.service.ICommonService;
 import com.mc.back.sigrecette.service.INotificationService;
+import com.mc.back.sigrecette.service.INotificationUserService;
 import com.mc.back.sigrecette.service.ISendWsService;
 import com.mc.back.sigrecette.tools.model.SearchObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,9 @@ public class NotificationController {
 
     @Autowired
     private INotificationService notificationService;
+    
+    @Autowired
+    private INotificationUserService notificationUserService;
 
     @Autowired
     private ISendWsService sendWsService;
@@ -50,9 +54,9 @@ public class NotificationController {
     }
 
     @GetMapping(value = "/ready", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> pushNotificationReady(HttpServletRequest authentication, @RequestParam String qid) {
+    public ResponseEntity<?> pushNotificationReady(HttpServletRequest authentication, @RequestParam String message) {
         try {
-            return sendWsService.sendResult(authentication, notificationService.pushNotificationReady(qid));
+            return sendWsService.sendResult(authentication, notificationService.pushNotificationReady(message));
         } catch (Exception argEx) {
             logger.error("Error NotificationController in method pushNotificationReady :: {}", argEx.toString());
             return sendWsService.sendResultException(authentication);
@@ -82,7 +86,7 @@ public class NotificationController {
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> setAsReadWs(HttpServletRequest authentication, @PathVariable Long id) {
         try {
-            return sendWsService.sendResult(authentication, notificationService.setAsReadWs(id));
+            return sendWsService.sendResult(authentication, notificationUserService.setAsReadWs(id));
         } catch (Exception argEx) {
             logger.error("Error NotificationController in method setAsReadWs :: {}", argEx.toString());
             return sendWsService.sendResultException(authentication);
