@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class NotificationService implements INotificationService {
@@ -67,7 +69,7 @@ public class NotificationService implements INotificationService {
     public Notification saveOrUpdate(Notification entity) {
         try {
             if (entity.getId() == null) {
-                entity.setDateEnvoi((Instant) commonService.getDateSystemNow().getPayload());
+            	entity.setDateEnvoi(((Timestamp) commonService.getDateSystemNow().getPayload()).toInstant());
             }
             return notificationRepository.save(entity);
         } catch (Exception e) {
@@ -117,16 +119,38 @@ public class NotificationService implements INotificationService {
     @Override
     public SendObject saveOrUpdateNotificationWs(Notification entity) {
         try {
+        	// 2) Convertir les listes en tableaux Long[]
+            Long[] listIdUserRecArray = entity.getListIdUserRec() != null
+                    ? entity.getListIdUserRec().stream()
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .toArray(Long[]::new)
+                    : new Long[0];
+
+            Long[] listIdProfilArray = entity.getListIdProfil() != null
+                    ? entity.getListIdProfil().stream()
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .toArray(Long[]::new)
+                    : new Long[0];
+            /*
             if (entity == null) {
                 Notification notification = new Notification();
-                //notification.setIdUser(1L);
                 notification.setDateEnvoi((Instant) commonService.getDateSystemNow().getPayload());
                 entity = notification;
             }
-
+			*/
             entity = this.saveOrUpdate(entity);
+         // 3) Appeler la fonction PostgreSQL
+            notificationRepository.saveNotificationUsers(
+                    entity.getId(),
+                    listIdUserRecArray,
+                    listIdProfilArray
+            );
+            
             if (entity == null)
                 return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());
+            
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(entity));
         } catch (Exception e) {
             logger.error("Error NotificationService in method saveOrUpdateNotificationWs :: {}", e.toString());

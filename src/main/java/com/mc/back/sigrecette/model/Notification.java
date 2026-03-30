@@ -1,11 +1,14 @@
 package com.mc.back.sigrecette.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Entity
@@ -21,11 +24,14 @@ public class Notification {
 
     @Column(name = "id_type_notif", precision = 22)
     private Long idTypeNotif;
-
-    @Column(name = "sujet", length = Integer.MAX_VALUE)
+    
+    @Size(max = 300)
+    @NotNull
+    @Column(name = "sujet", nullable = false, length = 300)
     private String sujet;
-
-    @Column(name = "titre", length = Integer.MAX_VALUE)
+    
+    @Size(max = 100)
+    @Column(name = "titre", length = 100)
     private String titre;
 
     @Column(name = "date_envoi")
@@ -33,8 +39,18 @@ public class Notification {
 
     @Column(name = "id_user_em", precision = 22)
     private Long idUserEm;
+    
     @Column(name = "priority")
     private Integer priority;
+    
+    @Column(name = "id_message_parent", precision = 22)
+    private Long idMessageParent;
+    
+    @Transient
+    private List<Long> listIdUserRec;
+    
+    @Transient
+    private List<Long> listIdProfil;
 
 
 }
