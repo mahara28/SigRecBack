@@ -8,6 +8,20 @@ spring:
   devtools:
     restart:
       additional-exclude: "io/swagger/**,org/springdoc/**"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: springboot000@gmail.com
+    password: hehr vxfl zbpv oedf
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail:
+      smtp:
+      auth: true
+      starttls:
+      enable: true
+      required: true
 
 
   # Database Configuration

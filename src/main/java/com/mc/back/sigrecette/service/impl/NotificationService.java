@@ -4,6 +4,7 @@ package com.mc.back.sigrecette.service.impl;
 import com.mc.back.sigrecette.model.Notification;
 import com.mc.back.sigrecette.repository.INotificationRepository;
 import com.mc.back.sigrecette.service.ICommonService;
+import com.mc.back.sigrecette.service.IEmailService;
 import com.mc.back.sigrecette.service.INotificationService;
 
 import com.mc.back.sigrecette.tools.ConstanteService;
@@ -30,6 +31,9 @@ public class NotificationService implements INotificationService {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+    
+    @Autowired
+    private IEmailService emailTemplateService;
 
     @Autowired
     private INotificationRepository notificationRepository;
@@ -228,6 +232,51 @@ public class NotificationService implements INotificationService {
         }
     }
 
+	@Override
+	public SendObject sendNotificationEmailWs(Notification entity) {
+		try {
+			List<String> listEmail = entity.getListEmail();
+            entity = this.saveOrUpdate(entity);
+            
+            String[] emailsArray = (listEmail != null && !listEmail.isEmpty())
+                    ? listEmail.toArray(new String[0])
+                    : new String[0];
+            Integer result = notificationRepository.saveNotificationEmails(
+                    entity.getId(),
+                    emailsArray
+            );
+            
+            if (result != null && result == 426 || entity == null) {
+            	deleteById(entity.getId());
+            	return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());
+            }
+            
+         // Envoi email après succès
+            if (listEmail != null && !listEmail.isEmpty()) {
+                String subject = entity.getTitre() != null ? entity.getTitre() : "Nouvelle notification";
+                String message = entity.getSujet() != null ? entity.getSujet() : "Vous avez reçu une nouvelle notification.";
+                //String senderName = entity.getCreatedBy() != null ? entity.getCreatedBy() : "Système";
+                
 
+                String htmlContent = emailTemplateService.buildNotificationTemplate(
+                        subject,
+                        message,
+                        "Système"
+                );
+                
+                System.out.println(htmlContent);
+
+                emailTemplateService.sendHtmlEmail(listEmail, subject, htmlContent);
+            }
+            
+            /*if (entity == null)
+                return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());*/
+            
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(entity));
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method sendNotificationEmailWs :: {}", e.toString());
+            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR, new JSONObject());
+        }
+	}
 
 }
