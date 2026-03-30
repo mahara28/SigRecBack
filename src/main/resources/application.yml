@@ -5,6 +5,9 @@ server:
 spring:
   application:
     name: sigrecette-back
+  devtools:
+    restart:
+      additional-exclude: "io/swagger/**,org/springdoc/**"
 
 
   # Database Configuration
