@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-
 public interface IVNotificationDetailRepository extends JpaRepository<VNotificationDetail, Long> {
 
     // Appel à la fonction get_notifications_by_user_rec
@@ -39,12 +38,12 @@ public interface IVNotificationDetailRepository extends JpaRepository<VNotificat
             @Param("idUserRec") Long idUserRec,
             @Param("idTypeNotif") Long idTypeNotif);
 
-    // Appel à la fonction get_notifications_by_priority
-    @Query(value = "SELECT * FROM get_notifications_by_priority(:idUserRec, :priorite)",
+    // Appel à la fonction get_notifications_by_priority - CORRIGÉ
+    @Query(value = "SELECT * FROM get_notifications_by_priority(:idUserRec, :priority)",
             nativeQuery = true)
-    List<VNotificationDetail> findByIdUserRecAndPriorite(
+    List<VNotificationDetail> findByIdUserRecAndPriority(
             @Param("idUserRec") Long idUserRec,
-            @Param("priorite") Integer priorite);
+            @Param("priority") Integer priority);
 
     // Appel à la fonction get_notifications_by_thread
     @Query(value = "SELECT * FROM get_notifications_by_thread(:idMessageParent)",
@@ -56,13 +55,13 @@ public interface IVNotificationDetailRepository extends JpaRepository<VNotificat
             nativeQuery = true)
     VNotificationDetail findNotificationById(@Param("id") Long id);
 
-    // Appel à la fonction de recherche avancée
-    @Query(value = "SELECT * FROM search_notifications(:idUserRec, :idTypeNotif, :priorite, :lu, :dateDebut, :dateFin, :searchText, :limit, :offset)",
+    // Appel à la fonction de recherche avancée - CORRIGÉ
+    @Query(value = "SELECT * FROM search_notifications(:idUserRec, :idTypeNotif, :priority, :lu, :dateDebut, :dateFin, :searchText, :limit, :offset)",
             nativeQuery = true)
     List<Object[]> searchNotifications(
             @Param("idUserRec") Long idUserRec,
             @Param("idTypeNotif") Long idTypeNotif,
-            @Param("priorite") Integer priorite,
+            @Param("priority") Integer priority,
             @Param("lu") Integer lu,
             @Param("dateDebut") java.util.Date dateDebut,
             @Param("dateFin") java.util.Date dateFin,
@@ -70,6 +69,3 @@ public interface IVNotificationDetailRepository extends JpaRepository<VNotificat
             @Param("limit") Integer limit,
             @Param("offset") Integer offset);
 }
-
-
-

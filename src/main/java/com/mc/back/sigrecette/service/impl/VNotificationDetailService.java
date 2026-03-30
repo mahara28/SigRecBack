@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VNotificationDetailService implements IVNotificationDetailService {
@@ -95,66 +96,66 @@ public class VNotificationDetailService implements IVNotificationDetailService {
         }
     }
 
-
     @Override
     public SendObject getNotificationsByIdUserRecAndIdTypeNotifWs(Long idUserRec, Long idTypeNotif) {
         try {
-            if (idUserRec == null || idTypeNotif == null)
-                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+            if (idUserRec == null || idTypeNotif == null) {
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM,
+                        new JSONObject().put("message", "idUserRec and idTypeNotif cannot be null"));
+            }
 
             List<VNotificationDetail> list = vNotificationDetailRepository.findByIdUserRecAndIdTypeNotif(idUserRec, idTypeNotif);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONArray(list));
         } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method getNotificationsByIdUserRecAndIdTypeNotifWs :: " + e);
-            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+            logger.error("Error in getNotificationsByIdUserRecAndIdTypeNotifWs :: {}", e.getMessage(), e);
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD,
+                    new JSONObject().put("error", e.getMessage()));
         }
     }
 
     @Override
-    public SendObject getNotificationsByIdmessageParentWs(Long idmessageParent) {
+    public SendObject getNotificationsByIdUserRecAndPriorityWs(Long idUserRec, Integer priority) {  // Renommé
         try {
-            if (idmessageParent == null)
-                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+            if (idUserRec == null || priority == null) {
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM,
+                        new JSONObject().put("message", "idUserRec and priority cannot be null"));
+            }
 
-            List<VNotificationDetail> list = vNotificationDetailRepository.findByIdMessageParent(idmessageParent);
+            List<VNotificationDetail> list = vNotificationDetailRepository.findByIdUserRecAndPriority(idUserRec, priority);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONArray(list));
         } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method getNotificationsByIdmessageParentWs :: " + e);
-            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+            logger.error("Error in getNotificationsByIdUserRecAndPriorityWs :: {}", e.getMessage(), e);
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD,
+                    new JSONObject().put("error", e.getMessage()));
         }
     }
 
     @Override
-    public SendObject getNotificationsByIdUserRecAndPrioriteWs(Long idUserRec, Integer priorite) {
+    public SendObject getNotificationsByIdMessageParentWs(Long idMessageParent) {
         try {
-            if (idUserRec == null || priorite == null)
-                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+            if (idMessageParent == null) {
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM,
+                        new JSONObject().put("message", "idMessageParent cannot be null"));
+            }
 
-            List<VNotificationDetail> list = vNotificationDetailRepository.findByIdUserRecAndPriorite(idUserRec, priorite);
+            List<VNotificationDetail> list = vNotificationDetailRepository.findByIdMessageParent(idMessageParent);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONArray(list));
         } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method getNotificationsByIdUserRecAndPrioriteWs :: " + e);
-            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+            logger.error("Error in getNotificationsByIdMessageParentWs :: {}", e.getMessage(), e);
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD,
+                    new JSONObject().put("error", e.getMessage()));
         }
     }
 
     @Override
     public VNotificationDetail getNotificationById(Long id) {
         try {
-            if (id == null)
-                return new VNotificationDetail();
-            return vNotificationDetailRepository.findById(id).orElse(new VNotificationDetail());
+            if (id == null) {
+                return null;
+            }
+            return vNotificationDetailRepository.findNotificationById(id);
         } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method getNotificationById :: " + e);
-            return new VNotificationDetail();
-        }
-    }
-
-    public List<VNotificationDetail> getList() {
-        try {
-            return vNotificationDetailRepository.findAll();
-        } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method getList :: " + e);
+            logger.error("Error in getNotificationById :: {}", e.getMessage(), e);
             return null;
         }
     }
