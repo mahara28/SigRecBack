@@ -47,10 +47,11 @@ public class Notification {
     private Long idMessageParent;
     
     @Transient
+    private List<String> listEmail;
+    
+    @Transient
     private List<Long> listIdUserRec;
     
     @Transient
     private List<Long> listIdProfil;
-
-
 }

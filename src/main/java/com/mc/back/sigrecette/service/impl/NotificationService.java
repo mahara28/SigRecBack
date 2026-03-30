@@ -228,6 +228,4 @@ public class NotificationService implements INotificationService {
         }
     }
 
-
-
 }

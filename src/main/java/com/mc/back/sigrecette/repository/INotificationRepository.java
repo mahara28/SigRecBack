@@ -22,4 +22,15 @@ public interface INotificationRepository extends JpaRepository<Notification, Lon
         @Param("listIdUserRec") Long[] listIdUserRec,
         @Param("listIdProfil") Long[] listIdProfil
     );
+    
+    @Query(value = """
+    	    SELECT public.fn_save_notification_email(
+    	        :idNotif,
+    	        CAST(:listEmail AS VARCHAR[])
+    	    )
+    	    """, nativeQuery = true)
+    	Integer saveNotificationEmails(
+    	    @Param("idNotif") Long idNotif,
+    	    @Param("listEmail") String[] listEmail
+    	);
 }

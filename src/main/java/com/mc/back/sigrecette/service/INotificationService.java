@@ -26,6 +26,8 @@ public interface INotificationService {
     SendObject setAsReadWs(Long id);
 
     SendObject sendNotificationWs(Notification entity);
+    
+    SendObject sendNotificationEmailWs(Notification entity);
 
     SendObject pushNotificationReady(String qid);
 
