@@ -12,8 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface INotificationRepository extends JpaRepository<Notification, Long> {
-	@Modifying
-    @Transactional
+	
     @Query(value = """
         SELECT public.fn_save_notification_users(
             :idNotif,
@@ -21,7 +20,7 @@ public interface INotificationRepository extends JpaRepository<Notification, Lon
             CAST(:listIdProfil AS BIGINT[])
         )
         """, nativeQuery = true)
-    void saveNotificationUsers(
+	Integer saveNotificationUsers(
         @Param("idNotif") Long idNotif,
         @Param("listIdUserRec") Long[] listIdUserRec,
         @Param("listIdProfil") Long[] listIdProfil
