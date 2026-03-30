@@ -29,58 +29,72 @@ public class VNotificationDetailService implements IVNotificationDetailService {
     @Override
     public SendObject getNotificationsByIdUserRecWs(Long idUserRec) {
         try {
-            if (idUserRec == null)
-                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+            if (idUserRec == null) {
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM,
+                        new JSONObject().put("message", "idUserRec cannot be null"));
+            }
 
             List<VNotificationDetail> list = vNotificationDetailRepository.findByIdUserRec(idUserRec);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONArray(list));
         } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method getNotificationsByIdUserRecWs :: " + e);
-            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+            logger.error("Error in getNotificationsByIdUserRecWs :: {}", e.getMessage(), e);
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD,
+                    new JSONObject().put("error", e.getMessage()));
         }
     }
 
     @Override
     public SendObject getNotificationsByIdUserEmWs(Long idUserEm) {
         try {
-            if (idUserEm == null)
-                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+            if (idUserEm == null) {
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM,
+                        new JSONObject().put("message", "idUserEm cannot be null"));
+            }
 
             List<VNotificationDetail> list = vNotificationDetailRepository.findByIdUserEm(idUserEm);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONArray(list));
         } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method getNotificationsByIdUserEmWs :: " + e);
-            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+            logger.error("Error in getNotificationsByIdUserEmWs :: {}", e.getMessage(), e);
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD,
+                    new JSONObject().put("error", e.getMessage()));
         }
     }
 
     @Override
     public SendObject getUnreadNotificationsByIdUserRecWs(Long idUserRec) {
         try {
-            if (idUserRec == null)
-                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+            if (idUserRec == null) {
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM,
+                        new JSONObject().put("message", "idUserRec cannot be null"));
+            }
 
             List<VNotificationDetail> list = vNotificationDetailRepository.findUnreadByIdUserRec(idUserRec);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONArray(list));
         } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method getUnreadNotificationsByIdUserRecWs :: " + e);
-            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+            logger.error("Error in getUnreadNotificationsByIdUserRecWs :: {}", e.getMessage(), e);
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD,
+                    new JSONObject().put("error", e.getMessage()));
         }
     }
 
     @Override
     public SendObject countUnreadNotificationsByIdUserRecWs(Long idUserRec) {
         try {
-            if (idUserRec == null)
-                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
+            if (idUserRec == null) {
+                return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM,
+                        new JSONObject().put("message", "idUserRec cannot be null"));
+            }
 
             Long count = vNotificationDetailRepository.countUnreadByIdUserRec(idUserRec);
-            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject().put("count", count));
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS,
+                    new JSONObject().put("count", count).put("idUserRec", idUserRec));
         } catch (Exception e) {
-            logger.error("Error VNotificationUserService in method countUnreadNotificationsByIdUserRecWs :: " + e);
-            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+            logger.error("Error in countUnreadNotificationsByIdUserRecWs :: {}", e.getMessage(), e);
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD,
+                    new JSONObject().put("error", e.getMessage()));
         }
     }
+
 
     @Override
     public SendObject getNotificationsByIdUserRecAndIdTypeNotifWs(Long idUserRec, Long idTypeNotif) {
@@ -102,7 +116,7 @@ public class VNotificationDetailService implements IVNotificationDetailService {
             if (idmessageParent == null)
                 return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
 
-            List<VNotificationDetail> list = vNotificationDetailRepository.findByIdmessageParent(idmessageParent);
+            List<VNotificationDetail> list = vNotificationDetailRepository.findByIdMessageParent(idmessageParent);
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONArray(list));
         } catch (Exception e) {
             logger.error("Error VNotificationUserService in method getNotificationsByIdmessageParentWs :: " + e);

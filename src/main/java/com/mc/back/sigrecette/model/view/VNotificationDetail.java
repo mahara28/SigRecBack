@@ -27,6 +27,9 @@ public class VNotificationDetail {
     @Column(name = "id_notif")
     private Long idNotif;
 
+    @Column(name = "qid")
+    private String qid;
+
     @Column(name = "id_type_notif")
     private Long idTypeNotif;
 
@@ -68,11 +71,11 @@ public class VNotificationDetail {
     @Column(name = "lu")
     private Integer lu;
 
-    @Column(name = "priorite")
-    private Integer priorite;
+    @Column(name = "priority")
+    private Integer priority;
 
-    @Column(name = "idmessage_parent")
-    private Long idmessageParent;
+    @Column(name = "id_message_parent")
+    private Long idMessageParent;
 
     @Column(name = "sujet_message_parent", length = Integer.MAX_VALUE)
     private String sujetMessageParent;
