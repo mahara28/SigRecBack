@@ -72,6 +72,17 @@ public class NotificationController {
             return sendWsService.sendResultException(authentication);
         }
     }
+    
+    @PostMapping(value = "/send", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> sendNotificationEmails(HttpServletRequest authentication, @RequestBody Notification entity) {
+        try {
+            return sendWsService.sendResult(authentication, notificationService.sendNotificationEmailWs(entity));
+        } catch (Exception argEx) {
+            logger.error("Error NotificationController in method sendNotificationEmails :: {}", argEx.toString());
+            return sendWsService.sendResultException(authentication);
+        }
+    }
+
 
     @PutMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> putNotificationWs(HttpServletRequest authentication, @RequestBody Notification entity) {
