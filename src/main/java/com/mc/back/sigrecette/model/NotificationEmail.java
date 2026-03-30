@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "notification_Email", schema = "public")
+@Table(name = "notification_email", schema = "public")
 public class NotificationEmail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +22,7 @@ public class NotificationEmail {
     private Long idNotif;
 
     @NotNull
+    @Size(max = 255)
     @Column(name = "email", nullable = false )
     private String email;
 }

@@ -2,23 +2,34 @@ package com.mc.back.sigrecette.repository;
 
 import com.mc.back.sigrecette.model.NotificationEmail;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface NotificationEmailRepository extends JpaRepository<NotificationEmail, Long> {
-    // Trouver par email
     Optional<NotificationEmail> findByEmail(String email);
 
-    // Trouver tous les emails d'une notification
     List<NotificationEmail> findByIdNotif(Long idNotif);
 
-    // Vérifier si un email existe
     boolean existsByEmail(String email);
 
-    // Supprimer par idNotif
+    boolean existsByIdNotifAndEmail(Long idNotif, String email);
+
+    @Modifying
+    @Transactional
     void deleteByIdNotif(Long idNotif);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM NotificationEmail ne WHERE ne.idNotif = :idNotif AND LOWER(ne.email) = LOWER(:email)")
+    void deleteByIdNotifAndEmail(@Param("idNotif") Long idNotif, @Param("email") String email);
+
+    long countByIdNotif(Long idNotif);
 }
 
