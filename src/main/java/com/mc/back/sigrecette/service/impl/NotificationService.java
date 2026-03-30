@@ -142,14 +142,19 @@ public class NotificationService implements INotificationService {
 			*/
             entity = this.saveOrUpdate(entity);
          // 3) Appeler la fonction PostgreSQL
-            notificationRepository.saveNotificationUsers(
+            Integer result = notificationRepository.saveNotificationUsers(
                     entity.getId(),
                     listIdUserRecArray,
                     listIdProfilArray
             );
             
-            if (entity == null)
-                return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());
+            if (result != null && result == 426 || entity == null) {
+            	deleteById(entity.getId());
+            	return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());
+            }
+            
+            /*if (entity == null)
+                return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());*/
             
             return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, new JSONObject(entity));
         } catch (Exception e) {
@@ -204,14 +209,14 @@ public class NotificationService implements INotificationService {
     }
 
     @Override
-    public SendObject pushNotificationReady(String qid) {
+    public SendObject pushNotificationReady(String message) {
         try {
-            if (qid == null)
+            if (message == null)
                 return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, new JSONObject());
 
             Notification notification = new Notification();
             notification.setDateEnvoi(Instant.now());
-            notification.setSujet("Résultat disponible pour " + qid);
+            notification.setSujet(message);
             //notification.setNotifEn("Result ready for " + qid);
             //notification.setIdUser(1L);
             this.sendNotificationWs(notification);
