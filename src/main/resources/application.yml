@@ -5,15 +5,19 @@ server:
 spring:
   application:
     name: sigrecette-back
+  devtools:
+    restart:
+      additional-exclude: "io/swagger/**,org/springdoc/**"
 
 
   # Database Configuration
   datasource:
     url: jdbc:postgresql://192.168.120.103:5432/sigrecette_db
-#    url: jdbc:postgresql://localhost:5432/sigrecette_db
+    #url: jdbc:postgresql://localhost:5432/sigrecette_db
     username: postgres
     password: admin
-#   password: 1234
+    #password: 1234
+
     hikari:
       maximumPoolSize: 5
       connectionTimeout: 3000
