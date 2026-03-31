@@ -124,5 +124,16 @@ public class NotificationController {
         }
     }
 
+    
+    @GetMapping(value = "/count", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> countNotificationNonLuesByUserAndType(HttpServletRequest authentication,@RequestParam Long idTypeNotif,
+            @RequestParam Long idUserRec) {
+        try {
+            return sendWsService.sendResult(authentication, notificationService.countNotificationNonLuesByUserAndType(idTypeNotif,idUserRec));
+        } catch (Exception argEx) {
+            logger.error("Error NotificationController in method countNotificationNonLuesByUserAndType :: {}", argEx.toString());
+            return sendWsService.sendResultException(authentication);
+        }
+    }
 
 }

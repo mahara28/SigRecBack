@@ -33,4 +33,24 @@ public interface INotificationRepository extends JpaRepository<Notification, Lon
     	    @Param("idNotif") Long idNotif,
     	    @Param("listEmail") String[] listEmail
     	);
+    
+    @Query(value = """
+    	    SELECT public.fn_count_notification_non_lu_by_type_and_user(
+    	        :idTypeNotif,
+    	        :idUserRec
+    	    )
+    	    """, nativeQuery = true)
+    	Long countNotificationNonLuesByUserAndType(
+    		@Param("idTypeNotif") Long  idTypeNotif,
+    	    @Param("idUserRec") Long idUserRec
+    	);
+    
+    @Query(value = """
+    	    SELECT public.count_unread_notifications(
+    	        :idUserRec
+    	    )
+    	    """, nativeQuery = true)
+    	Long countNotificationNonLes(
+    	    @Param("idUserRec") Long idUserRec
+    	);
 }
