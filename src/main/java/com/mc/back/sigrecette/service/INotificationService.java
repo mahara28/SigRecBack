@@ -31,7 +31,7 @@ public interface INotificationService {
 
     SendObject pushNotificationReady(String qid);
     
-    SendObject countNotificationNonLuesByUserAndType(Long idTypeNotif,Long idUserRec);
+    SendObject countNotificationNonLuesByUserAndCodeType(String codeTypeNotif,Long idUserRec);
     //SendObject countNotificationNonLues(Long idUserRec);
 
  

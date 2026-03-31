@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/notification")
+@RequestMapping("/notification-message")
 public class NotificationController {
 
     private static final Logger logger = LogManager.getLogger(NotificationController.class);
@@ -126,10 +126,10 @@ public class NotificationController {
 
     
     @GetMapping(value = "/count", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> countNotificationNonLuesByUserAndType(HttpServletRequest authentication,@RequestParam Long idTypeNotif,
+    public ResponseEntity<?> countNotificationNonLuesByUserAndCodeType(HttpServletRequest authentication,@RequestParam String codeTypeNotif,
             @RequestParam Long idUserRec) {
         try {
-            return sendWsService.sendResult(authentication, notificationService.countNotificationNonLuesByUserAndType(idTypeNotif,idUserRec));
+            return sendWsService.sendResult(authentication, notificationService.countNotificationNonLuesByUserAndCodeType(codeTypeNotif,idUserRec));
         } catch (Exception argEx) {
             logger.error("Error NotificationController in method countNotificationNonLuesByUserAndType :: {}", argEx.toString());
             return sendWsService.sendResultException(authentication);

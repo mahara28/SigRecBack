@@ -35,6 +35,14 @@ public interface INotificationRepository extends JpaRepository<Notification, Lon
     	);
     
     @Query(value = """
+    	    SELECT public.fn_count_notification_non_lu_by_code_and_user(:codeTypeNotif, :idUserRec)
+    	    """, nativeQuery = true)
+    	Long countNotificationNonLuesByUserAndCodeType(
+    		@Param("codeTypeNotif") String codeTypeNotif,
+    	    @Param("idUserRec") Long idUserRec
+    	);
+    
+    @Query(value = """
     	    SELECT public.fn_count_notification_non_lu_by_type_and_user(
     	        :idTypeNotif,
     	        :idUserRec
