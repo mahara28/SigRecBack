@@ -130,7 +130,7 @@ public class VNotificationDetailController {
     public ResponseEntity<?> getNotificationsByIdmessageParentWs(HttpServletRequest request,
                                                                  @PathVariable(name = "idmessageParent") Long idmessageParent) {
         try {
-            return sendWsService.sendResult(request, vNotificationDetailService.getNotificationsByIdmessageParentWs(idmessageParent));
+            return sendWsService.sendResult(request, vNotificationDetailService.getNotificationsByIdMessageParentWs(idmessageParent));
         } catch (Exception argEx) {
             logger.error("Error VNotificationUserController in method getNotificationsByIdmessageParentWs :: {}", argEx.toString());
             return sendWsService.sendResultException(request);
@@ -148,7 +148,7 @@ public class VNotificationDetailController {
                                                                       @PathVariable(name = "idUserRec") Long idUserRec,
                                                                       @PathVariable(name = "priorite") Integer priorite) {
         try {
-            return sendWsService.sendResult(request, vNotificationDetailService.getNotificationsByIdUserRecAndPrioriteWs(idUserRec, priorite));
+            return sendWsService.sendResult(request, vNotificationDetailService.getNotificationsByIdUserRecAndPriorityWs(idUserRec, priorite));
         } catch (Exception argEx) {
             logger.error("Error VNotificationUserController in method getNotificationsByIdUserRecAndPrioriteWs :: {}", argEx.toString());
             return sendWsService.sendResultException(request);
