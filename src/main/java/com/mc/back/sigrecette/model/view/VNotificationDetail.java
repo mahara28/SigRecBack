@@ -32,6 +32,9 @@ public class VNotificationDetail {
 
     @Column(name = "id_type_notif")
     private Long idTypeNotif;
+    
+    @Column(name = "code_type_notif")
+    private String codeTypeNotif;
 
     @Column(name = "id_user_em")
     private Long idUserEm;

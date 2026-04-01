@@ -7,6 +7,7 @@ import com.mc.back.sigrecette.service.ISendWsService;
 import com.mc.back.sigrecette.service.IVNotificationDetailService;
 import com.mc.back.sigrecette.tools.ConstanteWs;
 import com.mc.back.sigrecette.tools.model.SearchObject;
+import com.mc.back.sigrecette.tools.model.SendObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -162,16 +163,35 @@ public class VNotificationDetailController {
             @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR_IN_METHOD, description = "Method Error", content = @Content),
             @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR, description = "Service Error", content = @Content)})
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+
     public ResponseEntity<?> getNotificationByIdWs(HttpServletRequest request,
                                                    @PathVariable(name = "id") Long id) {
         try {
+            // Vérifier si l'ID est null
+            if (id == null) {
+                logger.warn("Attempt to get notification with null ID");
+                return sendWsService.sendResult(request,
+                        new SendObject(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM,
+                                "Notification ID cannot be null"));
+            }
+
+            // Récupérer la notification
             VNotificationDetail notification = vNotificationDetailService.getNotificationById(id);
+
+            // Vérifier si la notification existe
+            if (notification == null || notification.getId() == null) {
+                logger.warn("Notification not found with ID: {}", id);
+                return sendWsService.sendResult(request,
+                        new SendObject(ConstanteWs._CODE_WS_ERROR_NOT_EXISTS_ROW_DATA_BASE,
+                                "Notification not found with ID: " + id));
+            }
+
+            // Retourner la notification trouvée
             return sendWsService.sendResult(request,
-                    notification.getId() != null
-                            ? new com.mc.back.sigrecette.tools.model.SendObject(ConstanteWs._CODE_WS_SUCCESS, notification)
-                            : new com.mc.back.sigrecette.tools.model.SendObject(ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, null));
+                    new SendObject(ConstanteWs._CODE_WS_SUCCESS, notification));
+
         } catch (Exception argEx) {
-            logger.error("Error VNotificationUserController in method getNotificationByIdWs :: {}", argEx.toString());
+            logger.error("Error in getNotificationByIdWs for ID: {} :: {}", id, argEx.getMessage(), argEx);
             return sendWsService.sendResultException(request);
         }
     }
