@@ -24,6 +24,7 @@ public interface INotificationUserService {
     SendObject deleteNotificationUserByIdWs(Long id);
 
     SendObject setAsReadWs(Long id);
-
+    
+    SendObject setAllAsReadWs(List<Long> id);
     
 }

@@ -7,6 +7,9 @@ import com.mc.back.sigrecette.service.INotificationUserService;
 import com.mc.back.sigrecette.service.ISendWsService;
 import com.mc.back.sigrecette.tools.model.SearchObject;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,12 +97,24 @@ public class NotificationController {
         }
     }
 
-    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/set-as-read/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> setAsReadWs(HttpServletRequest authentication, @PathVariable Long id) {
         try {
             return sendWsService.sendResult(authentication, notificationUserService.setAsReadWs(id));
         } catch (Exception argEx) {
             logger.error("Error NotificationController in method setAsReadWs :: {}", argEx.toString());
+            return sendWsService.sendResultException(authentication);
+        }
+    }
+    
+    @PutMapping(value = "/set-all-as-read", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> setAsRead(
+            HttpServletRequest authentication,
+            @RequestBody List<Long> ids) {
+        try {
+            return sendWsService.sendResult(authentication, notificationUserService.setAllAsReadWs(ids));
+        } catch (Exception argEx) {
+            logger.error("Error NotificationUserController in method setAsRead :: {}", argEx.toString());
             return sendWsService.sendResultException(authentication);
         }
     }

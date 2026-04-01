@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.mc.back.sigrecette.model.NotificationUser;
@@ -24,9 +23,6 @@ import com.mc.back.sigrecette.tools.model.SendObject;
 public class NotificationUserService implements INotificationUserService{
 
 	private static final Logger logger = LogManager.getLogger(NotificationUserService.class);
-
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     private INotificationUserRepository notificationUserRepository;
@@ -152,6 +148,33 @@ public class NotificationUserService implements INotificationUserService{
             logger.error("Error NotificationUserService in method setAsReadWs :: {}", e.toString());
             return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
         }
+	}
+	
+	@Override
+	public SendObject setAllAsReadWs(List<Long> ids) {
+	    try {
+	        if (ids == null || ids.isEmpty()) {
+	            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_ALIAS_PARAM, new JSONObject());
+	        }
+
+	        Long[] idsArray = ids.toArray(new Long[0]);
+
+	        Integer result = notificationUserRepository.setNotificationUsersAsRead(idsArray);
+
+	        if (result == null || result != 200) {
+	            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_SAVE_OR_UPDATE, new JSONObject());
+	        }
+
+	        JSONObject json = new JSONObject();
+	        json.put("message", "Notifications marquées comme lues avec succès");
+	        json.put("count", ids.size());
+
+	        return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, json);
+
+	    } catch (Exception e) {
+	        logger.error("Error NotificationUserService in method setAsReadWs :: {}", e.toString());
+	        return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, new JSONObject());
+	    }
 	}
 
 }
