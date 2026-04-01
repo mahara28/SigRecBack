@@ -30,6 +30,9 @@ public interface INotificationService {
     SendObject sendNotificationEmailWs(Notification entity);
 
     SendObject pushNotificationReady(String qid);
+    
+    SendObject countNotificationNonLuesByUserAndCodeType(String codeTypeNotif,Long idUserRec);
+    //SendObject countNotificationNonLues(Long idUserRec);
 
  
 }

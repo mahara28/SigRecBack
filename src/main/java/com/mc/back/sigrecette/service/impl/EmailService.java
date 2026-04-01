@@ -1,22 +1,25 @@
 package com.mc.back.sigrecette.service.impl;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.mc.back.sigrecette.service.IEmailService;
-
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService implements IEmailService{
 
-	private final JavaMailSender mailSender;
+	@Autowired
+	private JavaMailSender mailSender;
+	
 	
 	@Override
 	public void sendHtmlEmail(List<String> recipients, String subject, String htmlContent) {
@@ -33,13 +36,34 @@ public class EmailService implements IEmailService{
             helper.setText(htmlContent, true); // true = HTML
 
             mailSender.send(message);
-        } catch (MessagingException e) {
-            throw new RuntimeException("Erreur lors de l'envoi de l'email", e);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de l'envoi de l'email : " + e.getMessage(), e);
         }
 	}
 	
 	@Override
     public String buildNotificationTemplate(String title, String message, String senderName) {
+        try {
+            ClassPathResource resource = new ClassPathResource("templates/email/auto-email.html");
+            String html = Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+
+            return html
+                    .replace("{{title}}", safe(title))
+                    .replace("{{message}}", safe(message))
+                    .replace("{{senderName}}", safe(senderName));
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors du chargement du template email", e);
+        }
+    }
+
+    private String safe(String value) {
+        return value != null ? value : "";
+    }
+	@Override
+    public String buildNotificationTemplate2(String title, String message, String senderName) {
         return """
             <!DOCTYPE html>
             <html lang="fr">

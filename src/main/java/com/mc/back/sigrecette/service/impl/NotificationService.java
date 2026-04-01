@@ -279,4 +279,22 @@ public class NotificationService implements INotificationService {
         }
 	}
 
+	@Override
+	public SendObject countNotificationNonLuesByUserAndCodeType(String codeTypeNotif, Long idUserRec) {
+		try {
+			if (codeTypeNotif == null || idUserRec == null) {
+            	return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR_ALIAS_PARAM, new JSONObject());
+            }
+			Long result = notificationRepository.countNotificationNonLuesByUserAndCodeType(
+					codeTypeNotif,
+					idUserRec
+            );
+            
+            return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, result	);
+        } catch (Exception e) {
+            logger.error("Error NotificationService in method countNotificationNonLuesByUserAndType :: {}", e.toString());
+            return utilsWs.resultWs(ConstanteService._CODE_SERVICE_ERROR, new JSONObject());
+        }
+	}
+
 }
