@@ -32,7 +32,7 @@ public class VNotificationDetail {
 
     @Column(name = "id_type_notif")
     private Long idTypeNotif;
-    
+
     @Column(name = "code_type_notif")
     private String codeTypeNotif;
 
