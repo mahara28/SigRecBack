@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -73,7 +72,7 @@ public class NotificationService implements INotificationService {
     public Notification saveOrUpdate(Notification entity) {
         try {
             if (entity.getId() == null) {
-            	entity.setDateEnvoi(((Timestamp) commonService.getDateSystemNow().getPayload()).toInstant());
+            	entity.setDateEnvoi(Instant.now());
             }
             return notificationRepository.save(entity);
         } catch (Exception e) {
