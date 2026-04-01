@@ -69,3 +69,6 @@ security:
     - /swagger-ui.html
     - /webjars/**
     - /ws/**
+app:
+  verification-code:
+    expiration-minutes: 5
