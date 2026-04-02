@@ -1,6 +1,9 @@
 package com.mc.back.sigrecette;
 
 import com.mc.back.sigrecette.config.SecurityProperties;
+
+import java.util.TimeZone;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 public class SigrecetteApplication {
 
     public static void main(String[] args) {
+    	TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         SpringApplication.run(SigrecetteApplication.class, args);
     }
     @Bean

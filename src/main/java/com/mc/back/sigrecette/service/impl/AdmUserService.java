@@ -12,7 +12,6 @@ import com.mc.back.sigrecette.repository.IAdmUserProfilRepository;
 import com.mc.back.sigrecette.repository.IAdmUserRepository;
 import com.mc.back.sigrecette.repository.IVAdmUserRepository;
 import com.mc.back.sigrecette.security.JwtSecurity;
-import com.mc.back.sigrecette.service.IAdmFoncService;
 import com.mc.back.sigrecette.service.IAdmUserProfilService;
 import com.mc.back.sigrecette.service.IAdmUserService;
 import com.mc.back.sigrecette.service.ICommonService;
@@ -54,8 +53,6 @@ public class AdmUserService implements IAdmUserService {
     @Autowired
     private IAdmUserProfilService admUserProfilService;
     
-    @Autowired
-    private IAdmFoncService admFoncService;
     
     @Autowired
     private  ActiveSessionRepository activeSessionRepository;
@@ -471,7 +468,7 @@ public class AdmUserService implements IAdmUserService {
             }*/
 
             // check refresh expiry
-            Timestamp now = new Timestamp(System.currentTimeMillis());
+            //Timestamp now = new Timestamp(System.currentTimeMillis());
             /*if (session.getRefreshExpiresAt() == null || session.getRefreshExpiresAt().before(now)) {
                 activeSessionRepository.delete(session);
                 return utilsWs.resultWs(ConstanteWs._CODE_WS_INVALID_REFRESH, new JSONObject());

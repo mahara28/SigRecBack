@@ -1,8 +1,10 @@
 package com.mc.back.sigrecette.controller.pub;
 
+import com.mc.back.sigrecette.model.AdmVerificationCode;
 import com.mc.back.sigrecette.model.tool.AuthRequest;
 import com.mc.back.sigrecette.security.JwtSecurityUtil;
 import com.mc.back.sigrecette.service.IAdmUserService;
+import com.mc.back.sigrecette.service.IAdmVerificationCodeService;
 import com.mc.back.sigrecette.service.ICommonService;
 import com.mc.back.sigrecette.service.ISendWsService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +27,9 @@ public class PublicController {
 
     @Autowired
     private IAdmUserService admUserService;
+    
+    @Autowired
+    private IAdmVerificationCodeService admVerificationCodeService;
 
     @Autowired
     private ICommonService commonService;
@@ -44,6 +49,30 @@ public class PublicController {
         try {
             return sendWsService.sendResultPublic(
                     admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange))
+            );
+        } catch (Exception argEx) {
+            logger.error("Error PublicController in method authenticate :: {}", String.valueOf(argEx));
+            return sendWsService.sendResultException(exchange);
+        }
+    }
+    
+    @RequestMapping(value = "/authenticateUserNo2FA", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> authenticateUserNo2FA(HttpServletRequest exchange, @RequestBody AuthRequest authenticationRequest) {
+        try {
+            return sendWsService.sendResultPublic(
+            		admVerificationCodeService.GenerationCodeVerif(authenticationRequest, sendWsService.ipAddressFormWeb(exchange))
+            );
+        } catch (Exception argEx) {
+            logger.error("Error PublicController in method authenticate :: {}", String.valueOf(argEx));
+            return sendWsService.sendResultException(exchange);
+        }
+    }
+    
+    @RequestMapping(value = "/verifyCode", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> verifyCode(HttpServletRequest exchange, @RequestBody AdmVerificationCode entity) {
+        try {
+            return sendWsService.sendResultPublic(
+            		admVerificationCodeService.verifyCode(entity, sendWsService.ipAddressFormWeb(exchange))
             );
         } catch (Exception argEx) {
             logger.error("Error PublicController in method authenticate :: {}", String.valueOf(argEx));

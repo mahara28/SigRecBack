@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -44,6 +45,23 @@ public class EmailService implements IEmailService{
 	}
 	
 	@Override
+	public String buildEmailTemplate(String templateName, Map<String, String> placeholders) {
+	    try {
+	        ClassPathResource resource = new ClassPathResource("templates/email/" + templateName);
+	        String html = Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+
+	        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+	            html = html.replace("{{" + entry.getKey() + "}}", entry.getValue() != null ? entry.getValue() : "");
+	        }
+
+	        return html;
+
+	    } catch (IOException e) {
+	        throw new RuntimeException("Erreur lors du chargement du template email : " + templateName, e);
+	    }
+	}
+	
+	@Override
     public String buildNotificationTemplate(String title, String message, String senderName) {
         try {
             ClassPathResource resource = new ClassPathResource("templates/email/auto-email.html");
@@ -62,6 +80,24 @@ public class EmailService implements IEmailService{
     private String safe(String value) {
         return value != null ? value : "";
     }
+    
+    @Override
+    public String buildVerificationCodeTemplate(String title, String code, Long expirationMinutes) {
+        try {
+            ClassPathResource resource = new ClassPathResource("templates/email/verification-code-email.html");
+            String html = Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+
+            return html
+                    .replace("{{TITLE}}", title != null ? title : "")
+                    .replace("{{CODE}}", code != null ? code : "")
+                    .replace("{{EXPIRATION_MINUTES}}", String.valueOf(expirationMinutes));
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors du chargement du template email de vérification", e);
+        }
+    }
+    
+    
 	@Override
     public String buildNotificationTemplate2(String title, String message, String senderName) {
         return """
