@@ -1,6 +1,8 @@
 package com.mc.back.sigrecette.service;
 import com.mc.back.sigrecette.model.AdmVerificationCode;
+import com.mc.back.sigrecette.model.tool.AuthRequest;
 import com.mc.back.sigrecette.tools.model.SendObject;
+
 public interface IAdmVerificationCodeService {
 	
 	AdmVerificationCode findById(Long id);
@@ -9,9 +11,9 @@ public interface IAdmVerificationCodeService {
 	
 	SendObject findByIdWs(Long id);
 	
-	SendObject GenerationCodeVerif(String email);
+	SendObject GenerationCodeVerif(AuthRequest email,String ipAdress);
 	
-	SendObject verifierValiditeCode(AdmVerificationCode entity);
+	SendObject verifyCode(AdmVerificationCode code,String ipAddress);
 	
 
 }

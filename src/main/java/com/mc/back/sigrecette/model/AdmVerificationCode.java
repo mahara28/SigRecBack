@@ -29,6 +29,9 @@ public class AdmVerificationCode {
     @Column(name = "id", nullable = false)
     private Long id;
 	
+	@Column(name = "id_user")
+    private Long idUser;
+	
 	@Size(max = 60)
     @NotNull
     @Column(name = "code_verif", nullable = false, length = 60)

@@ -18,6 +18,7 @@ public class ConstanteWs {
 	public static final String _CODE_WS_SUCCESS = "200";
 	public static final String _CODE_WS_SUCCESS_WAIT_PERMISSION = "201";
 	public static final String _CODE_WS_ACCOUNT_EXPIRED = "202";
+	public static final String _CODE_WS_SUCCESS_WAIT_CODE_VERIFICATION = "203";
 
 	public static final String _CODE_WS_BAD_REQUEST = "400";
 	public static final String _CODE_WS_UNAUTHORIZED = "401";
@@ -27,6 +28,9 @@ public class ConstanteWs {
 
 	public static final String _CODE_WS_LOGIN_EXISTS = "411";
 	public static final String _CODE_WS_CODE_EXISTS = "413";
+	
+	public static final String _CODE_WS_PERMISSION_DENIED = "415";
+	public static final String _CODE_WS_CODE_EXPIRE = "416";
 
 	public static final String _CODE_WS_ERROR_IN_METHOD = "420";
 	public static final String _CODE_WS_ERROR_ALIAS_PARAM = "421";
