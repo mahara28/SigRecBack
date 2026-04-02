@@ -30,7 +30,7 @@ public class VNotificationDetailService implements IVNotificationDetailService {
         try {
             return vNotificationDetailRepository.findAll();
         } catch (Exception e) {
-            logger.error("Error NotificationService in method getList :: {}", e.toString());
+            logger.error("Error NotificationDetailService in method getList :: {}", e.toString());
             return null;
         }
     }

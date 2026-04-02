@@ -1,11 +1,13 @@
 
 package com.mc.back.sigrecette.controller.priv;
 
+import com.mc.back.sigrecette.model.Notification;
 import com.mc.back.sigrecette.model.view.VNotificationDetail;
 import com.mc.back.sigrecette.service.ICommonService;
 import com.mc.back.sigrecette.service.ISendWsService;
 import com.mc.back.sigrecette.service.IVNotificationDetailService;
 import com.mc.back.sigrecette.tools.ConstanteWs;
+import com.mc.back.sigrecette.tools.model.CriteriaSearch;
 import com.mc.back.sigrecette.tools.model.SearchObject;
 import com.mc.back.sigrecette.tools.model.SendObject;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,19 +38,15 @@ public class VNotificationDetailController {
     private ICommonService commonService;
 
 
-    @Operation(summary = "Get list of notifications with search filter")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = ConstanteWs._CODE_WS_SUCCESS, description = "Success"),
-            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, description = "One or many parameter(s) is null", content = @Content),
-            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR_IN_METHOD, description = "Method Error", content = @Content),
-            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR, description = "Service Error", content = @Content)})
+
+
     @PostMapping(value = "/data", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getDataNotificationUserWs(HttpServletRequest request ) {
+    public ResponseEntity<?> getDataNotificationDetailWs(HttpServletRequest authentication, @RequestBody SearchObject obj) {
         try {
-            return sendWsService.sendResult(request, vNotificationDetailService.getListNotificationDetailWs());
+            return sendWsService.sendResult(authentication, commonService.getListPaginator(obj, new VNotificationDetail(), null));
         } catch (Exception argEx) {
-            logger.error("Error VNotificationUserController in method getDataNotificationUserWs :: {}", argEx.toString());
-            return sendWsService.sendResultException(request);
+            logger.error("Error AdministrationController in method getDataNotificationWs :: {}", argEx.toString());
+            return sendWsService.sendResultException(authentication);
         }
     }
 
