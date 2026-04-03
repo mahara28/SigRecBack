@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,17 +42,39 @@ public class PublicController {
     @Autowired
     private JwtSecurityUtil jwtSecurityUtil;
 
-
+    
+    @Value("${app.multi-fact-auth}")
+    private boolean multiFactAuth;
 
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> authenticate(HttpServletRequest exchange, @RequestBody AuthRequest authenticationRequest) {
+        try {
+        	// Si MFA activé => génération et envoi du code par email
+            if (multiFactAuth) {
+            	return sendWsService.sendResultPublic(
+                		admVerificationCodeService.GenerationCodeVerif(authenticationRequest, sendWsService.ipAddressFormWeb(exchange))
+                );
+            }
+
+            // Sinon authentification simple
+            return sendWsService.sendResultPublic(
+                    admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange))
+            );
+        } catch (Exception argEx) {
+            logger.error("Error PublicController in method authenticate :: {}", String.valueOf(argEx));
+            return sendWsService.sendResultException(exchange);
+        }
+    }
+    
+    @RequestMapping(value = "/authenticateSimple", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> authenticateUser(HttpServletRequest exchange, @RequestBody AuthRequest authenticationRequest) {
         try {
             return sendWsService.sendResultPublic(
                     admUserService.authenticateUserWs(authenticationRequest, sendWsService.ipAddressFormWeb(exchange))
             );
         } catch (Exception argEx) {
-            logger.error("Error PublicController in method authenticate :: {}", String.valueOf(argEx));
+            logger.error("Error PublicController in method authenticateUser :: {}", String.valueOf(argEx));
             return sendWsService.sendResultException(exchange);
         }
     }
