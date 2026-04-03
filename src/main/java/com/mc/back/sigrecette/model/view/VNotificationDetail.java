@@ -24,6 +24,9 @@ public class VNotificationDetail {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "id_notif_user")
+    private Long idNotifUser;
+    
     @Column(name = "id_notif")
     private Long idNotif;
 
@@ -50,7 +53,7 @@ public class VNotificationDetail {
     @Column(name = "username_rec", length = 300)
     private String usernameRec;
 
-    @Column(name = "id_email_rec")
+    @Column(name = "id_notif_email")
     private Long idEmailRec;
 
     @Size(max = 300)
