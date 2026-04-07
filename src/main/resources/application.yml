@@ -74,4 +74,4 @@ security:
 app:
   verification-code:
     expiration-minutes: 5
-  multi-fact-auth: true
+  multi-fact-auth: false

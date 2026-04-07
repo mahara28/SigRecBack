@@ -1,0 +1,32 @@
+public SendObject insertDynamic(NomenclatureDTO dto) {
+
+    try {
+
+        if (dto.getNomTable() == null || dto.getNomTable().isEmpty()) {
+            return utilsWs.resultWs("400", "Nom table obligatoire");
+        }
+
+        if (dto.getData() == null || dto.getData().isEmpty()) {
+            return utilsWs.resultWs("400", "Data vide");
+        }
+
+        String tableName = dto.getNomTable().toLowerCase().trim();
+
+        Optional<ParametrageNomenclatures> param =
+                paramRepo.findByNomTable(tableName);
+
+        if (param.isEmpty()) {
+            return utilsWs.resultWs("404", "Table non autorisée");
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(dto.getData());
+
+        String result = nomenclatureRepository.callInsertFunction(tableName, json);
+
+        return utilsWs.resultWs(ConstanteWs._CODE_WS_SUCCESS, result);
+
+    } catch (Exception e) {
+        return utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_IN_METHOD, e.getMessage());
+    }
+}
