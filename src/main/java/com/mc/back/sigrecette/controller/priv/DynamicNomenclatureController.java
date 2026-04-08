@@ -1,7 +1,7 @@
 package com.mc.back.sigrecette.controller.priv;
 import com.mc.back.sigrecette.model.ParametrageNomenclatures;
 import com.mc.back.sigrecette.model.tool.NomenclatureDTO;
-<<<<<<< HEAD
+
 import com.mc.back.sigrecette.repository.IParametrageNomenclaturesRepository;
 import com.mc.back.sigrecette.repository.NomenclatureRepository;
 import com.mc.back.sigrecette.service.ICommonService;
@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
-=======
+
 import com.mc.back.sigrecette.model.view.VParamNomenColumns;
 import com.mc.back.sigrecette.service.ICommonService;
 import com.mc.back.sigrecette.service.ISendWsService;
@@ -27,7 +27,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 
->>>>>>> 38bd612835afff3ce47f04ff312d0dcfbcd340d1
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,17 +51,12 @@ public class DynamicNomenclatureController {
 	private static final Logger logger = LogManager.getLogger(DynamicNomenclatureController.class);
 	@Autowired
     private ISendWsService sendWsService;
-
-    private static final Logger logger = LogManager.getLogger(DynamicNomenclatureController.class);
-
-
     @Autowired
     private ICommonService commonService;
-    
+
     @Autowired
     private  NomenclatureService nomenclatureservice;
-    @Autowired
-    private ICommonService commonService;
+
     @Autowired
     private UtilsWs utilsWs;
     @Autowired
@@ -76,10 +70,7 @@ public class DynamicNomenclatureController {
         SendObject result = nomenclatureservice.insertDynamic(dto);
         return ResponseEntity.ok(result);
     }
-<<<<<<< HEAD
 
-    @Autowired
-    private ISendWsService sendWsService;
 
     @PostMapping(value = "/data", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getData(HttpServletRequest request,
@@ -181,7 +172,5 @@ public class DynamicNomenclatureController {
             return sendWsService.sendResultException(request);
         }
     }
-=======
-    
->>>>>>> 38bd612835afff3ce47f04ff312d0dcfbcd340d1
+
 }
