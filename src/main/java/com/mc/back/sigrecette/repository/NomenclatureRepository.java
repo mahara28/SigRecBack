@@ -5,6 +5,7 @@ import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class NomenclatureRepository {
@@ -24,5 +25,16 @@ public class NomenclatureRepository {
 
         return result != null ? result.toString() : null;
     }
+    public List<Map<String, Object>> getDataFromTable(String tableName) {
+
+        String sql = "SELECT * FROM " + tableName;
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.unwrap(org.hibernate.query.NativeQuery.class)
+                .setResultTransformer(org.hibernate.transform.AliasToEntityMapResultTransformer.INSTANCE);
+
+        return query.getResultList();
+    }
+
 }
 
