@@ -1,7 +1,7 @@
 package com.mc.back.sigrecette.controller.priv;
 import com.mc.back.sigrecette.model.ParametrageNomenclatures;
 import com.mc.back.sigrecette.model.tool.NomenclatureDTO;
-<<<<<<< HEAD
+
 import com.mc.back.sigrecette.repository.IParametrageNomenclaturesRepository;
 import com.mc.back.sigrecette.repository.NomenclatureRepository;
 import com.mc.back.sigrecette.service.ICommonService;
@@ -12,22 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
-=======
-import com.mc.back.sigrecette.model.view.VParamNomenColumns;
-import com.mc.back.sigrecette.service.ICommonService;
-import com.mc.back.sigrecette.service.ISendWsService;
-import com.mc.back.sigrecette.service.impl.NomenclatureService;
-import com.mc.back.sigrecette.tools.ConstanteWs;
-import com.mc.back.sigrecette.tools.model.SearchObject;
-import com.mc.back.sigrecette.tools.model.SendObject;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletRequest;
-
->>>>>>> 38bd612835afff3ce47f04ff312d0dcfbcd340d1
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
