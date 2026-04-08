@@ -42,6 +42,9 @@ public class VAdmUser {
     @Size(max = 50)
     @Column(name = "code", length = 50)
     private String code;
+    
+    @Column(name = "date_birth")
+    private Date dateBirth;
 
     @Size(max = 40)
     @Column(name = "code_profes", length = 40)
