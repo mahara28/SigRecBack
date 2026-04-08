@@ -1,8 +1,8 @@
 package com.mc.back.sigrecette.controller.priv;
 
 import com.mc.back.sigrecette.model.ParametrageNomenclatures;
+import com.mc.back.sigrecette.model.view.VParamNomenColumns;
 import com.mc.back.sigrecette.service.ICommonService;
-import com.mc.back.sigrecette.service.IParametrageNomenclaturesService;
 import com.mc.back.sigrecette.service.ISendWsService;
 import com.mc.back.sigrecette.tools.ConstanteWs;
 import com.mc.back.sigrecette.tools.model.SearchObject;
@@ -43,6 +43,21 @@ public class ParametrageNomenclaturesController {
             return sendWsService.sendResult(request, commonService.getListPaginator(obj, new ParametrageNomenclatures(), null));
         } catch (Exception argEx) {
             logger.error("Error ParametrageNomenclaturesController in method getDataParametrageNomenclaturesWs :: {}", argEx.toString());
+            return sendWsService.sendResultException(request);
+        }
+    }
+    
+    @Operation(summary = "Get list with search filter")
+    @ApiResponses(value = {@ApiResponse(responseCode = ConstanteWs._CODE_WS_SUCCESS, description = "Success"),
+            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, description = "One or many parameter(s) is null", content = @Content),
+            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR_IN_METHOD, description = "Method error", content = @Content),
+            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR, description = "Service error", content = @Content)})
+    @PostMapping(value = "/vdata", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getvDataWs(HttpServletRequest request, @RequestBody SearchObject obj) {
+        try {
+            return sendWsService.sendResult(request, commonService.getListPaginator(obj, new VParamNomenColumns(), null));
+        } catch (Exception argEx) {
+            logger.error("Error ParametrageNomenclaturesController in method getvDataWs :: {}", String.valueOf(argEx));
             return sendWsService.sendResultException(request);
         }
     }
