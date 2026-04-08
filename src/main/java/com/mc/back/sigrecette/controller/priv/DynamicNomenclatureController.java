@@ -13,14 +13,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 
+import com.mc.back.sigrecette.service.ISendWsService;
+import com.mc.back.sigrecette.tools.ConstanteWs;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.mc.back.sigrecette.service.ISendWsService;
-import com.mc.back.sigrecette.tools.ConstanteWs;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
@@ -37,17 +38,12 @@ public class DynamicNomenclatureController {
 	private static final Logger logger = LogManager.getLogger(DynamicNomenclatureController.class);
 	@Autowired
     private ISendWsService sendWsService;
-
-    private static final Logger logger = LogManager.getLogger(DynamicNomenclatureController.class);
-
-
     @Autowired
     private ICommonService commonService;
-    
+
     @Autowired
     private  NomenclatureService nomenclatureservice;
-    @Autowired
-    private ICommonService commonService;
+
     @Autowired
     private UtilsWs utilsWs;
     @Autowired
@@ -61,10 +57,7 @@ public class DynamicNomenclatureController {
         SendObject result = nomenclatureservice.insertDynamic(dto);
         return ResponseEntity.ok(result);
     }
-<<<<<<< HEAD
 
-    @Autowired
-    private ISendWsService sendWsService;
 
     @PostMapping(value = "/data", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getData(HttpServletRequest request,
@@ -166,7 +159,5 @@ public class DynamicNomenclatureController {
             return sendWsService.sendResultException(request);
         }
     }
-=======
-    
->>>>>>> 38bd612835afff3ce47f04ff312d0dcfbcd340d1
+
 }
