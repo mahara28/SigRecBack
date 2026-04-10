@@ -49,6 +49,10 @@ public class VParamNomenColumns {
     private String coluExtFst;
     
     @Size(max = 50)
+    @Column(name = "type_donnee_fst", length = 50)
+    private String typeDonneeFst;
+    
+    @Size(max = 50)
     @Column(name = "code_libe_colu_fst", length = 50)
     private String codeLibeColuFst;
     
@@ -62,5 +66,9 @@ public class VParamNomenColumns {
     @Size(max = 50)
     @Column(name = "code_libe_colu_sec", length = 50)
     private String codeLibeColuSec;
+    
+    @Size(max = 50)
+    @Column(name = "type_donnee_sec", length = 50)
+    private String typeDonneeSec;
 
 }

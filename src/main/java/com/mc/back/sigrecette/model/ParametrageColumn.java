@@ -46,5 +46,9 @@ public class ParametrageColumn {
     @Size(max = 50)
     @Column(name = "fore_table_name", length = 50)
     private String foreTableName;
-
+    
+    
+    @Size(max = 50)
+    @Column(name = "type_donnee", length = 50)
+    private String typeDonnee;
 }

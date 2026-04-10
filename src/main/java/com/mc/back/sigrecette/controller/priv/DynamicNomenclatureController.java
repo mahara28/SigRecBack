@@ -1,14 +1,18 @@
 package com.mc.back.sigrecette.controller.priv;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mc.back.sigrecette.model.AdmUser;
 import com.mc.back.sigrecette.model.ParametrageNomenclatures;
 import com.mc.back.sigrecette.model.tool.NomenclatureDTO;
 
 import com.mc.back.sigrecette.repository.IParametrageNomenclaturesRepository;
-import com.mc.back.sigrecette.repository.NomenclatureRepository;
+import com.mc.back.sigrecette.repository.INomenclatureRepository;
 import com.mc.back.sigrecette.service.ICommonService;
 import com.mc.back.sigrecette.service.impl.NomenclatureService;
 import com.mc.back.sigrecette.tools.UtilsWs;
 import com.mc.back.sigrecette.tools.model.SendObject;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,8 +52,8 @@ public class DynamicNomenclatureController {
     private UtilsWs utilsWs;
     @Autowired
     private IParametrageNomenclaturesRepository paramRepo;
-    @Autowired
-    private NomenclatureRepository nomenclatureRepository;
+
+    
     @PostMapping("/insert")
     public ResponseEntity<?> insert(HttpServletRequest request,
                                     @RequestBody NomenclatureDTO dto) {
@@ -69,6 +73,21 @@ public class DynamicNomenclatureController {
             );
         } catch (Exception e) {
             logger.error("Error DynamicNomenclatureController in method getData :: {}", e.toString());
+            return sendWsService.sendResultException(request);
+        }
+    }
+    
+    @Operation(summary = "Get a Nomenclature by its id")
+    @ApiResponses(value = {@ApiResponse(responseCode = ConstanteWs._CODE_WS_SUCCESS, description = "Success"),
+            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, description = "One or many parameter(s) is null", content = @Content),
+            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR_IN_METHOD, description = "Method error", content = @Content),
+            @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR, description = "Service error", content = @Content)})
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getNomenclatureByIdWs(HttpServletRequest request, @PathVariable(name = "id") Long id,@RequestParam String nomTable) {
+        try {
+            return sendWsService.sendResult(request, nomenclatureservice.findByIdWs(nomTable,id));
+        } catch (Exception argEx) {
+            logger.error("Error DynamicNomenclatureController in method getAdmUserByIdWs :: {}", String.valueOf(argEx));
             return sendWsService.sendResultException(request);
         }
     }
@@ -103,9 +122,13 @@ public class DynamicNomenclatureController {
             }
 
             // Récupération data
-            List<Map<String, Object>> data =
-                    nomenclatureRepository.getDataFromTable(tableName);
+            String resultat =
+            		paramRepo.getDataFromTable(tableName);
+            ObjectMapper mapper = new ObjectMapper();
 
+            List<Map<String, Object>> data =
+                mapper.readValue(resultat, new TypeReference<>() {});
+            
             if (data == null || data.isEmpty()) {
                 return sendWsService.sendResult(request,
                         utilsWs.resultWs(ConstanteWs._CODE_WS_ERROR_NOT_EXISTS_ROW_DATA_BASE, null));
