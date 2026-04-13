@@ -38,7 +38,7 @@ public class ParametrageRechercheMultiCritereController {
 	 @Autowired
 	 private ICommonService commonService;
 	    
-	@Operation(summary = "Insert a new object")
+	@Operation(summary = "get Stats")
     @ApiResponses(value = {
             @ApiResponse(responseCode = ConstanteWs._CODE_WS_SUCCESS, description = "Success"),
             @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR_ALIAS_PARAM, description = "One or more parameter(s) is null", content = @Content),
@@ -46,11 +46,11 @@ public class ParametrageRechercheMultiCritereController {
             @ApiResponse(responseCode = ConstanteWs._CODE_WS_ERROR, description = "Service error", content = @Content)
     })
     @PostMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addFonction(HttpServletRequest request, @RequestBody StatsRequestDto entity) {
+    public ResponseEntity<?> getStats(HttpServletRequest request, @RequestBody StatsRequestDto entity) {
         try {
             return sendWsService.sendResult(request, statsService.getStats(entity));
         } catch (Exception argEx) {
-            logger.error("Error AdmProfessionController in addFonction method: {}", argEx.toString());
+            logger.error("Error ParametrageRechercheMultiCritereController in getStats method: {}", argEx.toString());
             return null;
         }
     }
